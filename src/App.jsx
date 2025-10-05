@@ -1,0 +1,25 @@
+import { BrowserRouter, Routes, Route } from "react-router";
+import { Toaster } from "sonner";
+import { CookiesProvider } from "react-cookie";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/SignUpPage";
+
+function App() {
+  return (
+    <>
+      <CookiesProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+          </Routes>
+          <Toaster />
+        </BrowserRouter>
+      </CookiesProvider>
+    </>
+  );
+}
+
+export default App;
