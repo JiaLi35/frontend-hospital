@@ -1,9 +1,17 @@
-import { Typography, Container } from "@mui/material";
+import { Typography, Box, Button } from "@mui/material";
+import { Link, useNavigate } from "react-router";
+import { useCookies } from "react-cookie";
+
+// use responsive appbar from material ui and drawers from material ui
 
 export default function Header({ title }) {
+  const navigate = useNavigate();
+  const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
+  const { currentuser } = cookies;
+
   return (
     <>
-      <Container
+      <Box
         sx={{
           textAlign: "center",
           py: 3,
@@ -12,7 +20,60 @@ export default function Header({ title }) {
         }}
       >
         <Typography>{title}</Typography>
-      </Container>
+        <Button
+          variant={"outlined"}
+          color="primary"
+          to="/"
+          component={Link}
+          sx={{ m: 1 }}
+        >
+          Home
+        </Button>
+        <Button
+          variant={"outlined"}
+          color="primary"
+          to="/doctors"
+          component={Link}
+          sx={{ m: 1 }}
+        >
+          Find a Doctor
+        </Button>
+        {currentuser ? (
+          <Button
+            variant="outlined"
+            sx={{ m: 1 }}
+            onClick={() => {
+              // remove the cookie
+              removeCookie("currentuser");
+              // redirect back to home page
+              navigate("/login");
+            }}
+          >
+            Logout
+          </Button>
+        ) : (
+          <>
+            <Button
+              variant={"outlined"}
+              color="primary"
+              to="/login"
+              component={Link}
+              sx={{ m: 1 }}
+            >
+              Login
+            </Button>
+            <Button
+              variant={"outlined"}
+              color="primary"
+              to="/signup"
+              component={Link}
+              sx={{ m: 1 }}
+            >
+              Sign Up
+            </Button>
+          </>
+        )}
+      </Box>
     </>
   );
 }

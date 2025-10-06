@@ -8,14 +8,43 @@ import {
   Link,
 } from "@mui/material";
 import { useState } from "react";
-import { Link as Links } from "react-router";
 import Header from "../components/Header";
+import { signup } from "../api/api_auth";
+import validator from "email-validator";
+import { toast } from "sonner";
+import { Link as Links, useNavigate } from "react-router";
+import { useCookies } from "react-cookie";
 
 export default function SignUpPage() {
+  const navigate = useNavigate();
+  const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSignUp = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      toast.error("Please fill in all the fields.");
+    } else if (!validator.validate(email)) {
+      // 2. make sure the email is valid
+      toast.error("Please use a valid email address");
+    } else if (password !== confirmPassword) {
+      toast.error("Password and Confirm Password do not match.");
+    } else {
+      try {
+        const userData = await signup(name, email, password);
+        setCookie("currentuser", userData, {
+          maxAge: 60 * 60 * 8, // cookie expires in 8 hours
+        });
+        toast.success("Successfully created a new account.");
+        navigate("/");
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response.data.message);
+      }
+    }
+  };
 
   return (
     <>
@@ -72,7 +101,7 @@ export default function SignUpPage() {
             color="primary"
             variant="contained"
             fullWidth
-            // onClick={handleSignUp}
+            onClick={handleSignUp}
           >
             Sign Up
           </Button>
