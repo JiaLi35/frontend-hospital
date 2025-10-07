@@ -46,7 +46,7 @@ export default function LoginPage() {
   return (
     <>
       <Header title={"Login"} />
-      <Container maxWidth="sm" sx={{ marginTop: "100px" }}>
+      <Container maxWidth="sm">
         <Paper sx={{ padding: 3 }}>
           <Typography>Email</Typography>
           <Box mb={2}>

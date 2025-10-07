@@ -5,6 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Header from "../components/Header";
 
+// this is where everyone views each doctor
 export default function FindDoctor() {
   return (
     <>
@@ -28,8 +29,8 @@ export default function FindDoctor() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small">Share</Button>
-                <Button size="small">Learn More</Button>
+                <Button size="small">View Profile</Button>
+                <Button size="small">Book an Appointment</Button>
               </CardActions>
             </Card>
           </Grid>
@@ -50,8 +51,8 @@ export default function FindDoctor() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small">Share</Button>
-                <Button size="small">Learn More</Button>
+                <Button size="small">View Profile</Button>
+                <Button size="small">Book an Appointment</Button>
               </CardActions>
             </Card>
           </Grid>
@@ -72,8 +73,8 @@ export default function FindDoctor() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small">Share</Button>
-                <Button size="small">Learn More</Button>
+                <Button size="small">View Profile</Button>
+                <Button size="small">Book an Appointment</Button>
               </CardActions>
             </Card>
           </Grid>

@@ -9,17 +9,19 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import Header from "../components/Header";
-import { signup } from "../api/api_auth";
 import validator from "email-validator";
 import { toast } from "sonner";
 import { Link as Links, useNavigate } from "react-router";
 import { useCookies } from "react-cookie";
+import { addPatientProfileAndSignUp } from "../api/api_patient";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [nric, setNric] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -31,13 +33,25 @@ export default function SignUpPage() {
       toast.error("Please use a valid email address");
     } else if (password !== confirmPassword) {
       toast.error("Password and Confirm Password do not match.");
+    } else if (phoneNumber.length > 10) {
+      // if phone number is longer than a certain length, throw an error to input a valid value
+      toast.error("Please enter a valid phone number.");
+    } else if (nric.length > 12) {
+      // if nric no. is longer than a certain length, throw an error to input a valid value
+      toast.error("Please enter a valid IC number.");
     } else {
       try {
-        const userData = await signup(name, email, password);
+        const userData = await addPatientProfileAndSignUp(
+          name,
+          email,
+          nric,
+          phoneNumber,
+          password
+        );
         setCookie("currentuser", userData, {
           maxAge: 60 * 60 * 8, // cookie expires in 8 hours
         });
-        toast.success("Successfully created a new account.");
+        toast.success("Successfully created a new account and patient profile");
         navigate("/");
       } catch (error) {
         console.log(error);
@@ -70,6 +84,40 @@ export default function SignUpPage() {
               value={email}
               onChange={(event) => {
                 setEmail(event.target.value);
+              }}
+            />
+          </Box>
+          <Typography>NRIC no.</Typography>
+          <Box mb={2}>
+            <TextField
+              type="number"
+              placeholder="NRIC No."
+              fullWidth
+              value={nric}
+              onChange={(event) => {
+                setNric(event.target.value);
+              }}
+              onInput={(e) => {
+                e.target.value = e.target.value
+                  .replace(/\D/g, "") // remove non-digits
+                  .slice(0, 12); // limit to 12 digits
+              }}
+            />
+          </Box>
+          <Typography>Phone Number</Typography>
+          <Box mb={2}>
+            <TextField
+              type="number"
+              placeholder="+60"
+              fullWidth
+              value={phoneNumber}
+              onChange={(event) => {
+                setPhoneNumber(event.target.value);
+              }}
+              onInput={(e) => {
+                e.target.value = e.target.value
+                  .replace(/\D/g, "") // remove non-digits
+                  .slice(0, 10); // limit to 12 digits
               }}
             />
           </Box>
