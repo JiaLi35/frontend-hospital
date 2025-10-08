@@ -13,7 +13,7 @@ import validator from "email-validator";
 import { toast } from "sonner";
 import { Link as Links, useNavigate } from "react-router";
 import { useCookies } from "react-cookie";
-import { addPatientProfileAndSignUp } from "../api/api_patient";
+import { addPatientProfileAndSignUp } from "../api/api_patients";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -26,19 +26,26 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignUp = async () => {
-    if (!name || !email || !password || !confirmPassword) {
+    if (
+      !name ||
+      !email ||
+      !nric ||
+      !phoneNumber ||
+      !password ||
+      !confirmPassword
+    ) {
       toast.error("Please fill in all the fields.");
     } else if (!validator.validate(email)) {
       // 2. make sure the email is valid
       toast.error("Please use a valid email address");
     } else if (password !== confirmPassword) {
       toast.error("Password and Confirm Password do not match.");
-    } else if (phoneNumber.length > 10) {
-      // if phone number is longer than a certain length, throw an error to input a valid value
-      toast.error("Please enter a valid phone number.");
-    } else if (nric.length > 12) {
-      // if nric no. is longer than a certain length, throw an error to input a valid value
+    } else if (nric.length !== 12) {
+      // if nric no. is not a certain length, throw an error to input a valid value
       toast.error("Please enter a valid IC number.");
+    } else if (phoneNumber.length !== 10) {
+      // if phone number is not a certain length, throw an error to input a valid value
+      toast.error("Please enter a valid phone number.");
     } else {
       try {
         const userData = await addPatientProfileAndSignUp(

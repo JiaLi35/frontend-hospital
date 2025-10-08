@@ -13,15 +13,12 @@ export const addPatientProfileAndSignUp = async (
   phone_number,
   password
 ) => {
-  const response = await axios.post(
-    API_URL + "patients/new-profile-and-signup",
-    {
-      name,
-      email,
-      nric,
-      phone_number,
-      password,
-    }
-  );
+  const response = await axios.post(API_URL + "patients/new-profile", {
+    name,
+    email,
+    nric,
+    phone_number,
+    password,
+  });
   return response.data;
 };

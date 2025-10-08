@@ -39,18 +39,47 @@ export default function Header({ title }) {
           Find a Doctor
         </Button>
         {currentuser ? (
-          <Button
-            variant="outlined"
-            sx={{ m: 1 }}
-            onClick={() => {
-              // remove the cookie
-              removeCookie("currentuser");
-              // redirect back to home page
-              navigate("/login");
-            }}
-          >
-            Logout
-          </Button>
+          <>
+            <Button
+              variant={"outlined"}
+              color="primary"
+              to="/add-doctor"
+              component={Link}
+              sx={{ m: 1 }}
+            >
+              Add a Doctor
+            </Button>
+            <Button
+              variant={"outlined"}
+              color="primary"
+              to="/specialties"
+              component={Link}
+              sx={{ m: 1 }}
+            >
+              Manage Specialties
+            </Button>
+            <Button
+              variant={"outlined"}
+              color="primary"
+              to="/manage-profile"
+              component={Link}
+              sx={{ m: 1 }}
+            >
+              Manage Profile
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{ m: 1 }}
+              onClick={() => {
+                // remove the cookie
+                removeCookie("currentuser");
+                // redirect back to home page
+                navigate("/login");
+              }}
+            >
+              Logout
+            </Button>
+          </>
         ) : (
           <>
             <Button
