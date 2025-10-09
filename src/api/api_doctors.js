@@ -27,9 +27,10 @@ export const addDoctorProfile = async (name, email, specialty, password) => {
 };
 
 // PUT (update) doctor profile information
-export const updateDoctor = async (id, biography) => {
+export const updateDoctor = async (id, biography, image) => {
   const response = await axios.put(API_URL + "doctors/update-profile/" + id, {
     biography: biography,
+    image: image,
   });
   return response.data;
 };

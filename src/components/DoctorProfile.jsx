@@ -1,3 +1,4 @@
+import Header from "../components/Header";
 import {
   Container,
   Typography,
@@ -10,13 +11,28 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import Header from "../components/Header";
-import { toast } from "sonner";
+import { styled } from "@mui/material/styles";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
-import { getDoctor, updateDoctor } from "../api/api_doctors";
 import { useNavigate, useParams } from "react-router";
+import { useCookies } from "react-cookie";
+import { toast } from "sonner";
+import { getDoctor, updateDoctor } from "../api/api_doctors";
 import { getSpecialties } from "../api/api_specialties";
+import { uploadImage } from "../api/api_image";
+import { API_URL } from "../api/constants";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 export default function DoctorProfile() {
   const navigate = useNavigate();
@@ -28,6 +44,7 @@ export default function DoctorProfile() {
   const [email, setEmail] = useState("");
   const [specialty, setSpecialty] = useState("");
   const [biography, setBiography] = useState("");
+  const [image, setImage] = useState(null);
   const [doctorId, setDoctorId] = useState("");
 
   useEffect(() => {
@@ -39,6 +56,7 @@ export default function DoctorProfile() {
         setEmail(doctorData ? doctorData.email : "");
         setSpecialty(doctorData ? doctorData.specialty._id : "");
         setBiography(doctorData ? doctorData.biography : "");
+        setImage(doctorData ? doctorData.image : null);
         setDoctorId(doctorData ? doctorData._id : "");
       })
       .catch((error) => {
@@ -58,7 +76,7 @@ export default function DoctorProfile() {
   }, []);
 
   const handleUpdateDoctor = async () => {
-    const updatedDoctor = await updateDoctor(doctorId, biography);
+    const updatedDoctor = await updateDoctor(doctorId, biography, image);
     console.log(updatedDoctor);
     toast.success("Doctor Profile successfully updated.");
     navigate(`/profile/${id}`);
@@ -123,8 +141,44 @@ export default function DoctorProfile() {
               }}
             />
           </Box>
-          <Box mb={2}>
-            <Button>Upload image</Button>
+          <Box
+            mb={2}
+            sx={{ display: "flex", gap: "10px", alignItems: "center" }}
+          >
+            {image ? (
+              <>
+                <img src={API_URL + image} width="200px" />
+                <Button
+                  color="info"
+                  variant="contained"
+                  size="small"
+                  onClick={() => setImage(null)}
+                >
+                  Remove
+                </Button>
+              </>
+            ) : (
+              <Button
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                startIcon={<CloudUploadIcon />}
+              >
+                Upload image
+                <VisuallyHiddenInput
+                  type="file"
+                  onChange={async (event) => {
+                    const data = await uploadImage(event.target.files[0]);
+                    console.log(data);
+                    // {image_url: "uploads\\image.jpg"}
+                    // set the image url into state
+                    setImage(data.image_url);
+                  }}
+                  accept="image/*"
+                />
+              </Button>
+            )}
           </Box>
           <Button
             color="primary"
