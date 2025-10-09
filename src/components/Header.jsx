@@ -38,7 +38,7 @@ export default function Header({ title }) {
         >
           Find a Doctor
         </Button>
-        {currentuser ? (
+        {currentuser && currentuser.role === "admin" ? (
           <>
             <Button
               variant={"outlined"}
@@ -58,10 +58,14 @@ export default function Header({ title }) {
             >
               Manage Specialties
             </Button>
+          </>
+        ) : null}
+        {currentuser ? (
+          <>
             <Button
               variant={"outlined"}
               color="primary"
-              to="/manage-profile"
+              to={`/profile/${currentuser._id}`}
               component={Link}
               sx={{ m: 1 }}
             >

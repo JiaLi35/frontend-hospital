@@ -2,8 +2,18 @@ import axios from "axios";
 import { API_URL } from "./constants";
 
 // GET patient profile information based on user_id
+export const getPatient = async (id) => {
+  const response = await axios.get(API_URL + "patients/" + id);
+  return response.data;
+};
 
 // PUT (update) patient profile information
+export const updatePatient = async (id, phone_number) => {
+  const response = await axios.put(API_URL + "patients/update-profile/" + id, {
+    phone_number: phone_number,
+  });
+  return response.data;
+};
 
 // POST new patient profile information
 export const addPatientProfileAndSignUp = async (

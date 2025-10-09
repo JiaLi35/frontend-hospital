@@ -5,7 +5,6 @@ import {
   Paper,
   TextField,
   Button,
-  InputLabel,
   Typography,
 } from "@mui/material";
 import Table from "@mui/material/Table";
@@ -23,9 +22,15 @@ import {
 } from "../api/api_specialties";
 import Header from "../components/Header";
 import { toast } from "sonner";
+import Swal from "sweetalert2";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router";
 
 export default function SpecialtiesPage() {
   /* ONLY ADMIN SHOULD SEE THIS PAGE */
+  const navigate = useNavigate();
+  const [cookies] = useCookies(["currentuser"]);
+  const { currentuser } = cookies;
 
   // store categories data from API
   const [specialties, setSpecialties] = useState([]);
@@ -35,7 +40,7 @@ export default function SpecialtiesPage() {
   useEffect(() => {
     getSpecialties()
       .then((data) => {
-        // putting the data into orders state
+        // putting the data into specialties state
         setSpecialties(data);
       })
       .catch((error) => {
@@ -43,12 +48,18 @@ export default function SpecialtiesPage() {
       });
   }, []); // call only once when the page loads
 
+  if (!currentuser || currentuser.role !== "admin") {
+    navigate("/");
+    toast.error("Access Denied");
+    return <></>;
+  }
+
   const handleAddNewSpecialty = async (specialty) => {
     if (!specialty) {
       toast.error("Please fill in the field!");
     } else {
       try {
-        // 2. trigger the API to create new category
+        // 2. trigger the API to create new specialty
         await addSpecialty(specialty);
         // 3.
         setSpecialty("");
@@ -59,6 +70,53 @@ export default function SpecialtiesPage() {
         toast.error(error.message);
       }
     }
+  };
+
+  const handleUpdateSpecialty = async (id) => {
+    const specificSpecialty = await getSpecialty(id);
+
+    Swal.fire({
+      title: "Update Category",
+      input: "text",
+      inputPlaceholder: specificSpecialty.specialty,
+      showCancelButton: true,
+      confirmButtonText: "Update",
+      showLoaderOnConfirm: true,
+      preConfirm: async (value) => {
+        if (!value) {
+          Swal.showValidationMessage("Please fill in the fields");
+        }
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await updateSpecialty(id, result.value);
+        const updatedSpecialty = await getSpecialties();
+        setSpecialties(updatedSpecialty);
+        toast.success("Specialty updated successfully");
+      }
+    });
+  };
+
+  const handleDeleteSpecialty = async (id) => {
+    Swal.fire({
+      title: "Are you sure you want to delete this Specialty?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      // once user confirm, then we delete the specialty
+      if (result.isConfirmed) {
+        // delete specialty in the backend
+        await deleteSpecialty(id);
+        // method #2: get the new data from the backend
+        const updatedSpecialty = await getSpecialties();
+        setSpecialties(updatedSpecialty);
+        toast.success("Specialty has been deleted");
+      }
+    });
   };
 
   return (
@@ -130,14 +188,14 @@ export default function SpecialtiesPage() {
                       <Button
                         color="primary"
                         variant="contained"
-                        // onClick={() => handleUpdateCategory(category._id)}
+                        onClick={() => handleUpdateSpecialty(spe._id)}
                       >
                         Edit
                       </Button>
                       <Button
                         color="error"
                         variant="contained"
-                        // onClick={() => handleDeleteCategory(category._id)}
+                        onClick={() => handleDeleteSpecialty(spe._id)}
                       >
                         Delete
                       </Button>
