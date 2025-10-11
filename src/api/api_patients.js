@@ -8,10 +8,18 @@ export const getPatient = async (id) => {
 };
 
 // PUT (update) patient profile information
-export const updatePatient = async (id, phone_number) => {
-  const response = await axios.put(API_URL + "patients/update-profile/" + id, {
-    phone_number: phone_number,
-  });
+export const updatePatient = async (id, phone_number, token) => {
+  const response = await axios.put(
+    API_URL + "patients/update-profile/" + id,
+    {
+      phone_number: phone_number,
+    },
+    {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    }
+  );
   return response.data;
 };
 

@@ -30,7 +30,8 @@ export default function SpecialtiesPage() {
   /* ONLY ADMIN SHOULD SEE THIS PAGE */
   const navigate = useNavigate();
   const [cookies] = useCookies(["currentuser"]);
-  const { currentuser } = cookies;
+  const { currentuser = {} } = cookies;
+  const { token = "" } = currentuser;
 
   // store categories data from API
   const [specialties, setSpecialties] = useState([]);

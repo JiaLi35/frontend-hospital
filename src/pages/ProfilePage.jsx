@@ -2,9 +2,9 @@ import { Container, Typography } from "@mui/material";
 import Header from "../components/Header";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router";
-import DoctorProfile from "../components/DoctorProfile";
+import DoctorUpdateProfile from "../components/DoctorUpdateProfile";
 import { toast } from "sonner";
-import PatientProfile from "../components/PatientProfile";
+import PatientUpdateProfile from "../components/PatientUpdateProfile";
 
 /* Here is where u filter the users based on their role. and then return the correct page based on their role. 
 
@@ -13,7 +13,7 @@ import PatientProfile from "../components/PatientProfile";
   if (role === "doctor") {
     return(<DoctorProfile/>)
   } else {
-    return(<PatientProfile/>)
+    return(<PatientUpdateProfile/>)
   }
 
 */
@@ -21,18 +21,18 @@ import PatientProfile from "../components/PatientProfile";
 export default function ProfilePage() {
   const navigate = useNavigate();
   const [cookies] = useCookies(["currentuser"]);
-  const { currentuser } = cookies;
+  const { currentuser = {} } = cookies;
 
   if (currentuser && currentuser.role === "doctor") {
     return (
       <>
-        <DoctorProfile />
+        <DoctorUpdateProfile />
       </>
     );
   } else if (currentuser) {
     return (
       <>
-        <PatientProfile />
+        <PatientUpdateProfile />
       </>
     );
   } else {

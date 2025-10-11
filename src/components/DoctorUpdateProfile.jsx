@@ -1,4 +1,4 @@
-import Header from "../components/Header";
+import Header from "./Header";
 import {
   Container,
   Typography,
@@ -34,11 +34,12 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function DoctorProfile() {
+export default function DoctorUpdateProfile() {
   const navigate = useNavigate();
   const { id } = useParams(); // retrieve id from the url
   const [cookies] = useCookies(["currentuser"]);
-  const { currentuser } = cookies; // use this currentuser to get user_id and compare with the user_id in doctor.
+  const { currentuser = {} } = cookies; // use this currentuser to get user_id and compare with the user_id in doctor.
+  const { token = "" } = currentuser;
   const [specialties, setSpecialties] = useState([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -76,7 +77,7 @@ export default function DoctorProfile() {
   }, []);
 
   const handleUpdateDoctor = async () => {
-    const updatedDoctor = await updateDoctor(doctorId, biography, image);
+    const updatedDoctor = await updateDoctor(doctorId, biography, image, token);
     console.log(updatedDoctor);
     toast.success("Doctor Profile successfully updated.");
     navigate(`/profile/${id}`);

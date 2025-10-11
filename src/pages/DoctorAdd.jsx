@@ -29,7 +29,8 @@ export default function DoctorAdd() {
 
   const navigate = useNavigate();
   const [cookies] = useCookies(["currentuser"]);
-  const { currentuser } = cookies;
+  const { currentuser = {} } = cookies;
+  const { token = "" } = currentuser;
   const [specialties, setSpecialties] = useState([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -53,7 +54,7 @@ export default function DoctorAdd() {
       toast.error("Password and Confirm Password do not match.");
     } else {
       try {
-        await addDoctorProfile(name, email, specialty, password);
+        await addDoctorProfile(name, email, specialty, password, token);
         toast.success("Successfully created a doctor's account and profile");
         navigate("/");
       } catch (error) {

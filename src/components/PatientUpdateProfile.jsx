@@ -6,18 +6,19 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import Header from "../components/Header";
+import Header from "./Header";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate, useParams } from "react-router";
 import { getPatient, updatePatient } from "../api/api_patients";
 
-export default function PatientProfile() {
+export default function PatientUpdateProfile() {
   const navigate = useNavigate();
   const { id } = useParams(); // retrieve id from the url
   const [cookies] = useCookies(["currentuser"]);
-  const { currentuser } = cookies; // use this currentuser to get user_id and compare with the user_id in doctor.
+  const { currentuser = {} } = cookies; // use this currentuser to get user_id and compare with the user_id in doctor.
+  const { token = "" } = currentuser;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [nric, setNric] = useState("");
@@ -41,7 +42,7 @@ export default function PatientProfile() {
   }, []);
 
   const handleUpdatePatient = async () => {
-    const updatedPatient = await updatePatient(patientId, phoneNumber);
+    const updatedPatient = await updatePatient(patientId, phoneNumber, token);
     console.log(updatedPatient);
     toast.success("Patient Profile successfully updated.");
     navigate(`/profile/${id}`);

@@ -8,6 +8,7 @@ import DoctorFind from "./pages/DoctorFind";
 import ProfilePage from "./pages/ProfilePage";
 import DoctorAdd from "./pages/DoctorAdd";
 import SpecialtiesPage from "./pages/SpecialtiesPage";
+import DoctorPage from "./pages/DoctorPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/add-doctor" element={<DoctorAdd />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
+            <Route path="/doctor/:id" element={<DoctorPage />} />
             <Route path="/specialties" element={<SpecialtiesPage />} />
           </Routes>
           <Toaster closeButton />

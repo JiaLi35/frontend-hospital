@@ -18,6 +18,8 @@ import { useEffect, useState } from "react";
 import { getSpecialties } from "../api/api_specialties";
 import { getDoctors } from "../api/api_doctors";
 import { toast } from "sonner";
+import { API_URL } from "../api/constants";
+import { Link } from "react-router";
 
 // this is where everyone views each doctor
 export default function DoctorFind() {
@@ -78,24 +80,33 @@ export default function DoctorFind() {
             </Typography>
           ) : null}
           {doctors.map((doc) => (
-            <Grid size={{ xs: 12, sm: 12, md: 6, lg: 4 }}>
+            <Grid size={{ xs: 12, sm: 12, md: 6, lg: 4 }} key={doc._id}>
               <Card>
                 <CardMedia
                   component="img"
                   alt="green iguana"
                   height="140"
-                  image="https://gametora.com/images/umamusume/characters/chara_stand_1016_101601.png"
+                  image={
+                    API_URL +
+                    (doc.image ? doc.image : "uploads/default_image.png")
+                  }
                 />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
                     {doc.name}
                   </Typography>
                   <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    Narita Brian is my favourite umamusume
+                    {doc.biography ? doc.biography : "No Biography"}
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Button size="small">View Profile</Button>
+                  <Button
+                    size="small"
+                    to={`/doctor/${doc._id}`}
+                    component={Link}
+                  >
+                    View Profile
+                  </Button>
                   <Button size="small">Book an Appointment</Button>
                 </CardActions>
               </Card>

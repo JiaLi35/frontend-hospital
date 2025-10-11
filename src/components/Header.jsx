@@ -7,7 +7,7 @@ import { useCookies } from "react-cookie";
 export default function Header({ title }) {
   const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
-  const { currentuser } = cookies;
+  const { currentuser = {} } = cookies;
 
   return (
     <>
