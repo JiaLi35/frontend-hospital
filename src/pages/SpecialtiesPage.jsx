@@ -49,12 +49,6 @@ export default function SpecialtiesPage() {
       });
   }, []); // call only once when the page loads
 
-  if (!currentuser || currentuser.role !== "admin") {
-    navigate("/");
-    toast.error("Access Denied");
-    return <></>;
-  }
-
   const handleAddNewSpecialty = async (specialty) => {
     if (!specialty) {
       toast.error("Please fill in the field!");

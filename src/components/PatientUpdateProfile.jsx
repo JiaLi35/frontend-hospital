@@ -42,10 +42,23 @@ export default function PatientUpdateProfile() {
   }, []);
 
   const handleUpdatePatient = async () => {
-    const updatedPatient = await updatePatient(patientId, phoneNumber, token);
-    console.log(updatedPatient);
-    toast.success("Patient Profile successfully updated.");
-    navigate(`/profile/${id}`);
+    if (!name || !phoneNumber) {
+      toast.error("Please fill in all the fields.");
+    } else {
+      try {
+        const updatedPatient = await updatePatient(
+          patientId,
+          phoneNumber,
+          token
+        );
+        console.log(updatedPatient);
+        toast.success("Patient Profile successfully updated.");
+        navigate(`/profile/${id}`);
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response.data.message);
+      }
+    }
   };
 
   return (

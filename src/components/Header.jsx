@@ -7,7 +7,7 @@ import { useCookies } from "react-cookie";
 export default function Header({ title }) {
   const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
-  const { currentuser = {} } = cookies;
+  const { currentuser } = cookies;
 
   return (
     <>
@@ -76,7 +76,7 @@ export default function Header({ title }) {
               sx={{ m: 1 }}
               onClick={() => {
                 // remove the cookie
-                removeCookie("currentuser");
+                removeCookie("currentuser", { path: "/" });
                 // redirect back to home page
                 navigate("/login");
               }}

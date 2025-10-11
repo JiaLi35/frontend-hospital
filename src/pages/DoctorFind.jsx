@@ -107,7 +107,13 @@ export default function DoctorFind() {
                   >
                     View Profile
                   </Button>
-                  <Button size="small">Book an Appointment</Button>
+                  <Button
+                    size="small"
+                    to={`/appointment/${doc._id}`}
+                    component={Link}
+                  >
+                    Book an Appointment
+                  </Button>
                 </CardActions>
               </Card>
             </Grid>

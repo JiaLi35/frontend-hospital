@@ -77,10 +77,24 @@ export default function DoctorUpdateProfile() {
   }, []);
 
   const handleUpdateDoctor = async () => {
-    const updatedDoctor = await updateDoctor(doctorId, biography, image, token);
-    console.log(updatedDoctor);
-    toast.success("Doctor Profile successfully updated.");
-    navigate(`/profile/${id}`);
+    if (!name || !specialty) {
+      toast.error("Please fill in all the fields.");
+    } else {
+      try {
+        const updatedDoctor = await updateDoctor(
+          doctorId,
+          biography,
+          image,
+          token
+        );
+        console.log(updatedDoctor);
+        toast.success("Doctor Profile successfully updated.");
+        navigate(`/profile/${id}`);
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response.data.message);
+      }
+    }
   };
 
   return (

@@ -1,6 +1,6 @@
 import { Button, Container, Paper, Typography } from "@mui/material";
 import Header from "../components/Header";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { getDoctorById } from "../api/api_doctors";
 
@@ -35,7 +35,9 @@ export default function DoctorPage() {
           <Typography>Specialty: {specialty}</Typography>
           <Typography>Biography: {biography}</Typography>
           {/* <Typography>Name: {name}</Typography> */}
-          <Button>Book appointment</Button>
+          <Button to={`/appointment/${id}`} component={Link}>
+            Book appointment
+          </Button>
         </Paper>
       </Container>
     </>

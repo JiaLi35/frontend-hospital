@@ -64,12 +64,6 @@ export default function DoctorAdd() {
     }
   };
 
-  if (!currentuser || currentuser.role !== "admin") {
-    navigate("/");
-    toast.error("Access Denied");
-    return <></>;
-  }
-
   return (
     <>
       <Header title="Add a Doctor" />

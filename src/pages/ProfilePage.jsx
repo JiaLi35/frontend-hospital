@@ -29,7 +29,7 @@ export default function ProfilePage() {
         <DoctorUpdateProfile />
       </>
     );
-  } else if (currentuser) {
+  } else if (currentuser && currentuser.role === "patient") {
     return (
       <>
         <PatientUpdateProfile />
