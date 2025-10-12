@@ -35,7 +35,7 @@ export default function DoctorPage() {
           <Typography>Specialty: {specialty}</Typography>
           <Typography>Biography: {biography}</Typography>
           {/* <Typography>Name: {name}</Typography> */}
-          <Button to={`/appointment/${id}`} component={Link}>
+          <Button to={`/book-appointment/${id}`} component={Link}>
             Book appointment
           </Button>
         </Paper>

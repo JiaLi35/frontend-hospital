@@ -9,6 +9,8 @@ import ProfilePage from "./pages/ProfilePage";
 import DoctorAdd from "./pages/DoctorAdd";
 import SpecialtiesPage from "./pages/SpecialtiesPage";
 import DoctorPage from "./pages/DoctorPage";
+import AppointmentAdd from "./pages/AppointmentAdd";
+import AppointmentView from "./pages/AppointmentView";
 import AppointmentPage from "./pages/AppointmentPage";
 
 function App() {
@@ -24,7 +26,12 @@ function App() {
             <Route path="/add-doctor" element={<DoctorAdd />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
             <Route path="/doctor/:id" element={<DoctorPage />} />
-            <Route path="/appointment/:id" element={<AppointmentPage />} />
+            <Route path="/book-appointment/:id" element={<AppointmentAdd />} />
+            <Route
+              path="/manage-appointments/:id"
+              element={<AppointmentPage />}
+            />
+            <Route path="/appointment/:id" element={<AppointmentView />} />
             <Route path="/specialties" element={<SpecialtiesPage />} />
           </Routes>
           <Toaster closeButton />

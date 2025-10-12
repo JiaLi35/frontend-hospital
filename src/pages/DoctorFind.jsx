@@ -84,7 +84,6 @@ export default function DoctorFind() {
               <Card>
                 <CardMedia
                   component="img"
-                  alt="green iguana"
                   height="140"
                   image={
                     API_URL +
@@ -109,7 +108,7 @@ export default function DoctorFind() {
                   </Button>
                   <Button
                     size="small"
-                    to={`/appointment/${doc._id}`}
+                    to={`/book-appointment/${doc._id}`}
                     component={Link}
                   >
                     Book an Appointment

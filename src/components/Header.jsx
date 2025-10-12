@@ -1,6 +1,9 @@
 import { Typography, Box, Button } from "@mui/material";
 import { Link, useNavigate } from "react-router";
 import { useCookies } from "react-cookie";
+import { getDoctor } from "../api/api_doctors";
+import { useEffect, useState } from "react";
+import { getPatient } from "../api/api_patients";
 
 // use responsive appbar from material ui and drawers from material ui
 
@@ -8,6 +11,22 @@ export default function Header({ title }) {
   const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
   const { currentuser } = cookies;
+  const [patientId, setPatientId] = useState("");
+  const [doctorId, setDoctorId] = useState("");
+
+  if (currentuser && currentuser.role === "doctor") {
+    useEffect(() => {
+      getDoctor(currentuser._id).then((doctorData) => {
+        setDoctorId(doctorData ? doctorData._id : "");
+      });
+    }, []);
+  } else if (currentuser && currentuser.role === "patient") {
+    useEffect(() => {
+      getPatient(currentuser._id).then((patientId) => {
+        setPatientId(patientId ? patientId._id : "");
+      });
+    }, []);
+  }
 
   return (
     <>
@@ -60,30 +79,63 @@ export default function Header({ title }) {
             </Button>
           </>
         ) : null}
-        {currentuser ? (
+        {currentuser && currentuser.role === "doctor" ? (
           <>
             <Button
               variant={"outlined"}
               color="primary"
-              to={`/profile/${currentuser._id}`}
+              to={`/profile/${doctorId}`}
               component={Link}
               sx={{ m: 1 }}
             >
               Manage Profile
             </Button>
             <Button
-              variant="outlined"
+              variant={"outlined"}
+              color="primary"
+              to={`/manage-appointments/${doctorId}`}
+              component={Link}
               sx={{ m: 1 }}
-              onClick={() => {
-                // remove the cookie
-                removeCookie("currentuser", { path: "/" });
-                // redirect back to home page
-                navigate("/login");
-              }}
             >
-              Logout
+              Manage Appointments
             </Button>
           </>
+        ) : null}
+        {currentuser && currentuser.role === "patient" ? (
+          <>
+            <Button
+              variant={"outlined"}
+              color="primary"
+              to={`/profile/${patientId}`}
+              component={Link}
+              sx={{ m: 1 }}
+            >
+              Manage Profile
+            </Button>
+            <Button
+              variant={"outlined"}
+              color="primary"
+              to={`/manage-appointments/${patientId}`}
+              component={Link}
+              sx={{ m: 1 }}
+            >
+              Manage Appointments
+            </Button>
+          </>
+        ) : null}
+        {currentuser ? (
+          <Button
+            variant="outlined"
+            sx={{ m: 1 }}
+            onClick={() => {
+              // remove the cookie
+              removeCookie("currentuser", { path: "/" });
+              // redirect back to home page
+              navigate("/login");
+            }}
+          >
+            Logout
+          </Button>
         ) : (
           <>
             <Button

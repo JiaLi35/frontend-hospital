@@ -2,7 +2,13 @@ import axios from "axios";
 import { API_URL } from "./constants";
 
 // GET patient profile information based on user_id
-export const getPatient = async (id) => {
+export const getPatient = async (user_id) => {
+  const response = await axios.get(API_URL + "patients/user/" + user_id);
+  return response.data;
+};
+
+// GET patient profile information based on user_id
+export const getPatientById = async (id) => {
   const response = await axios.get(API_URL + "patients/" + id);
   return response.data;
 };

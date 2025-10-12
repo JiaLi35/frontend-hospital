@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useCookies } from "react-cookie";
 import { toast } from "sonner";
-import { getDoctor, updateDoctor } from "../api/api_doctors";
+import { getDoctorById, updateDoctor } from "../api/api_doctors";
 import { getSpecialties } from "../api/api_specialties";
 import { uploadImage } from "../api/api_image";
 import { API_URL } from "../api/constants";
@@ -49,7 +49,7 @@ export default function DoctorUpdateProfile() {
   const [doctorId, setDoctorId] = useState("");
 
   useEffect(() => {
-    getDoctor(id)
+    getDoctorById(id)
       .then((doctorData) => {
         console.log(doctorData);
         // update the individual states with data
@@ -102,9 +102,9 @@ export default function DoctorUpdateProfile() {
       <Header title="Edit Doctor Profile" />
       <Container maxWidth="sm">
         <Paper sx={{ padding: 3 }}>
-          <Typography>Name</Typography>
           <Box mb={2}>
             <TextField
+              label="Name"
               placeholder="Name"
               fullWidth
               value={name}
@@ -113,9 +113,9 @@ export default function DoctorUpdateProfile() {
               }}
             />
           </Box>
-          <Typography>Email</Typography>
           <Box mb={2}>
             <TextField
+              label="Email"
               disabled
               placeholder="Email"
               fullWidth
@@ -145,9 +145,9 @@ export default function DoctorUpdateProfile() {
               </Select>
             </FormControl>
           </Box>
-          <Typography>Biography</Typography>
           <Box mb={2}>
             <TextField
+              label="Biography"
               placeholder="Biography"
               fullWidth
               value={biography}

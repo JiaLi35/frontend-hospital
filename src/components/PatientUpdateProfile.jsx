@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate, useParams } from "react-router";
-import { getPatient, updatePatient } from "../api/api_patients";
+import { getPatientById, updatePatient } from "../api/api_patients";
 
 export default function PatientUpdateProfile() {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ export default function PatientUpdateProfile() {
   const [patientId, setPatientId] = useState("");
 
   useEffect(() => {
-    getPatient(id)
+    getPatientById(id)
       .then((patientData) => {
         console.log(patientData);
         // update the individual states with data
@@ -66,9 +66,9 @@ export default function PatientUpdateProfile() {
       <Header title="Edit Patient Profile" />
       <Container maxWidth="sm">
         <Paper sx={{ padding: 3 }}>
-          <Typography>Name</Typography>
           <Box mb={2}>
             <TextField
+              label="Name"
               placeholder="Name"
               fullWidth
               value={name}
@@ -77,9 +77,9 @@ export default function PatientUpdateProfile() {
               }}
             />
           </Box>
-          <Typography>Email</Typography>
           <Box mb={2}>
             <TextField
+              label="Email"
               disabled
               placeholder="Email"
               fullWidth
@@ -89,9 +89,9 @@ export default function PatientUpdateProfile() {
               }}
             />
           </Box>
-          <Typography>NRIC No.</Typography>
           <Box mb={2}>
             <TextField
+              label="NRIC No."
               placeholder="NRIC No."
               disabled
               fullWidth
@@ -101,9 +101,9 @@ export default function PatientUpdateProfile() {
               }}
             />
           </Box>
-          <Typography>Phone Number</Typography>
           <Box mb={2}>
             <TextField
+              label="Phone Number"
               placeholder="Phone Number"
               fullWidth
               value={phoneNumber}
