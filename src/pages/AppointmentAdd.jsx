@@ -22,14 +22,10 @@ import { DateCalendar } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
 import { toast } from "sonner";
 import { newAppointment } from "../api/api_appointments";
 import Header from "../components/Header";
 dayjs.extend(customParseFormat);
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 export default function AppointmentAdd() {
   const { id } = useParams();
@@ -127,14 +123,9 @@ export default function AppointmentAdd() {
       const combinedDateTime = dayjs(
         `${date.format("YYYY-MM-DD")} ${selectedTime}`,
         "YYYY-MM-DD hh:mm A"
-      ); // .tz("Asia/Kuala_Lumpur", true); // convert to GMT +8
-
+      );
       // Convert to ISO string
       const dateTime = combinedDateTime.toISOString();
-
-      // // Convert to ISO string
-      // const dateTime = combinedDateTime.format(); // keeps GMT+8 offset
-
       try {
         await newAppointment(doctorId, dateTime, patientId, token);
         toast("Successfully booked appointment");

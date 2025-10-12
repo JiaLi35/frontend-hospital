@@ -42,3 +42,43 @@ export async function newAppointment(doctorId, dateTime, patientId, token) {
   );
   return response.data;
 }
+
+export async function updateAppointment(id, doctorId, patientId, dateTime) {
+  const response = await axios.put(
+    API_URL + "appointments/update-appointment/" + id,
+    {
+      doctorId,
+      patientId,
+      dateTime,
+    }
+  );
+  return response.data;
+}
+
+export async function completeAppointment(id, token) {
+  const response = await axios.put(
+    API_URL + "appointments/complete-appointment/" + id,
+    {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    }
+  );
+  return response.data;
+}
+
+export async function cancelAppointment(id) {
+  const response = await axios.put(
+    API_URL + "appointments/cancel-appointment/" + id
+  );
+  return response.data;
+}
+
+export async function deleteAppointment(id, token) {
+  const response = await axios.delete(API_URL + "appointments/" + id, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+  return response.data;
+}

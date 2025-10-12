@@ -14,6 +14,11 @@ import { useEffect, useState } from "react";
 import { getAppointmentsByPatientId } from "../api/api_appointments";
 import { Link, useParams } from "react-router";
 import { toast } from "sonner";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export default function PatientAppointmentPage() {
   const { id } = useParams();
@@ -68,19 +73,37 @@ export default function PatientAppointmentPage() {
           </>
         ) : null}
         <Paper elevation={1}>
-          {appointments.map((appointment) => (
-            <Box key={appointment._id} display={"flex"} gap={3}>
-              <Typography>{appointment.doctorId.name}</Typography>
-              <Typography>
-                {appointment.doctorId.specialty.specialty}
-              </Typography>
-              <Typography>{appointment.dateTime}</Typography>
-              <Typography>{appointment.status}</Typography>
-              <Button to={`/appointment/${appointment._id}`} component={Link}>
-                View Appointment
-              </Button>
-            </Box>
-          ))}
+          {appointments.map((appointment) => {
+            const localDateTime = dayjs(appointment.dateTime)
+              .local()
+              .format("DD MMM YYYY, hh:mm A");
+
+            return (
+              <Box
+                key={appointment._id}
+                display={"flex"}
+                gap={3}
+                sx={{ padding: "10px" }}
+              >
+                <Typography>{appointment.doctorId.name}</Typography>
+                <Typography>
+                  {appointment.doctorId.specialty.specialty}
+                </Typography>
+                <Typography>{localDateTime}</Typography>
+                <Typography>{appointment.status}</Typography>
+                <Button
+                  to={`/appointment/${appointment._id}`}
+                  component={Link}
+                  variant="contained"
+                >
+                  View Appointment
+                </Button>
+                <Button color="error" variant="contained">
+                  Cancel
+                </Button>
+              </Box>
+            );
+          })}
         </Paper>
       </Container>
     </>
