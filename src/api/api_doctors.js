@@ -62,3 +62,13 @@ export const updateDoctor = async (id, biography, image, token) => {
   );
   return response.data;
 };
+
+// DELETE doctor profile info
+export const deleteDoctor = async (id, token) => {
+  const response = await axios.delete(API_URL + "doctors/" + id, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+  return response.data;
+};

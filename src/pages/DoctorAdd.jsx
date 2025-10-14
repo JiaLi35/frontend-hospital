@@ -56,7 +56,7 @@ export default function DoctorAdd() {
       try {
         await addDoctorProfile(name, email, specialty, password, token);
         toast.success("Successfully created a doctor's account and profile");
-        navigate("/");
+        navigate("/doctors");
       } catch (error) {
         console.log(error);
         toast.error(error.response.data.message);
@@ -69,9 +69,9 @@ export default function DoctorAdd() {
       <Header title="Add a Doctor" />
       <Container maxWidth="sm">
         <Paper sx={{ padding: 3 }}>
-          <Typography>Name</Typography>
           <Box mb={2}>
             <TextField
+              label="Name"
               placeholder="Name"
               fullWidth
               value={name}
@@ -80,9 +80,9 @@ export default function DoctorAdd() {
               }}
             />
           </Box>
-          <Typography>Email</Typography>
           <Box mb={2}>
             <TextField
+              label="Email"
               placeholder="Email"
               fullWidth
               value={email}
@@ -109,9 +109,9 @@ export default function DoctorAdd() {
               </Select>
             </FormControl>
           </Box>
-          <Typography>Password</Typography>
           <Box mb={2}>
             <TextField
+              label="Password"
               placeholder="Password"
               type="password"
               fullWidth
@@ -121,9 +121,9 @@ export default function DoctorAdd() {
               }}
             />
           </Box>
-          <Typography>Confirm Password</Typography>
           <Box mb={2}>
             <TextField
+              label="Confirm Password"
               placeholder="Confirm Password"
               type="password"
               fullWidth

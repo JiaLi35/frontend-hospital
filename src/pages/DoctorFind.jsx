@@ -8,6 +8,7 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  IconButton,
 } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -17,16 +18,18 @@ import Header from "../components/Header";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { getSpecialties } from "../api/api_specialties";
-import { getDoctors } from "../api/api_doctors";
+import { deleteDoctor, getDoctors } from "../api/api_doctors";
 import { toast } from "sonner";
 import { API_URL } from "../api/constants";
 import { Link } from "react-router";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Swal from "sweetalert2";
 
 // this is where everyone views each doctor
 export default function DoctorFind() {
   const [cookies] = useCookies("currentuser");
   const { currentuser = {} } = cookies;
+  const { token = "" } = currentuser;
   const [doctors, setDoctors] = useState([]);
   const [specialties, setSpecialties] = useState([]);
   const [specialty, setSpecialty] = useState("all");
@@ -46,6 +49,7 @@ export default function DoctorFind() {
     // get doctors from API
     getDoctors(specialty)
       .then((data) => {
+        console.log(data);
         setDoctors(data);
       })
       .catch((error) => {
@@ -53,6 +57,31 @@ export default function DoctorFind() {
         toast.error(error.message);
       });
   }, [specialty]);
+
+  const handleDoctorDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure you want to delete this doctor?",
+      text: "You won't be able to revert this",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    }).then(async (result) => {
+      // once user confirm, then we delete the doctor
+      if (result.isConfirmed) {
+        try {
+          await deleteDoctor(id, token);
+          toast.success("Doctor deleted successfully.");
+          const updatedDoctors = await getDoctors(specialty);
+          setDoctors(updatedDoctors);
+        } catch (error) {
+          console.log(error);
+          toast.error(error.response.data.message);
+        }
+      }
+    });
+  };
 
   return (
     <>
@@ -118,6 +147,14 @@ export default function DoctorFind() {
                     >
                       Book an Appointment
                     </Button>
+                  ) : null}
+                  {currentuser && currentuser.role === "admin" ? (
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => handleDoctorDelete(doc._id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                   ) : null}
                 </CardActions>
               </Card>
