@@ -75,6 +75,15 @@ export default function Header({ title }) {
             >
               Manage Specialties
             </Button>
+            <Button
+              variant={"outlined"}
+              color="primary"
+              to={`/manage-appointments/${currentuser._id}`}
+              component={Link}
+              sx={{ m: 1 }}
+            >
+              Manage Appointments
+            </Button>
           </>
         ) : null}
         {currentuser && currentuser.role === "doctor" ? (

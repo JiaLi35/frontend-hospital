@@ -108,7 +108,7 @@ export default function DoctorAppointmentPage() {
           </Select>
         </FormControl>
 
-        <Paper elevation={1}>
+        <Paper elevation={1} sx={{ marginY: "20px" }}>
           {appointments.map((appointment) => {
             const localDateTime = dayjs(appointment.dateTime)
               .local()
@@ -119,7 +119,7 @@ export default function DoctorAppointmentPage() {
                 key={appointment._id}
                 display={"flex"}
                 gap={3}
-                sx={{ padding: "10px" }}
+                sx={{ padding: "20px" }}
               >
                 <Typography>{appointment.patientId.name}</Typography>
                 <Typography>{appointment.patientId.email}</Typography>
