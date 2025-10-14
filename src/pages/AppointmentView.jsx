@@ -11,6 +11,7 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect, useState, useMemo } from "react";
 import Header from "../components/Header";
 import { getAppointment, updateAppointment } from "../api/api_appointments";
@@ -150,9 +151,18 @@ export default function AppointmentView() {
 
   return (
     <>
-      <Header title="Appointment Details" />
+      <Header />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Container sx={{ marginY: "30px" }}>
+          <Button
+            sx={{ marginBottom: "20px" }}
+            onClick={() => {
+              navigate(`/manage-appointments/${userId}`);
+            }}
+          >
+            <ArrowBackIcon />
+            Go Back
+          </Button>
           <Paper elevation={1} sx={{ padding: "20px" }}>
             <Box mb={2} display={"flex"} gap={3}>
               <TextField
@@ -184,7 +194,7 @@ export default function AppointmentView() {
                 </Select>
               </FormControl>
             </Box>
-            <Grid container spacing={1}>
+            <Grid container spacing={1} mb={2}>
               <Grid size={{ xs: 12, md: 6 }}>
                 <DateCalendar
                   views={["year", "month", "day"]}
@@ -206,7 +216,7 @@ export default function AppointmentView() {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
-                <Typography>Select a time: </Typography>
+                <Typography mb={2}>Select a time: </Typography>
                 <Grid container spacing={2}>
                   {timeSlots.map((time) => (
                     <Grid
@@ -229,7 +239,6 @@ export default function AppointmentView() {
                           setSelectedTime(time);
                         }}
                         sx={{
-                          margin: "2.5px",
                           textTransform: "none",
                           fontWeight: "bold",
                           borderColor: "#2196f3",

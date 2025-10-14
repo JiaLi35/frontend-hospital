@@ -66,83 +66,103 @@ export default function DoctorAdd() {
 
   return (
     <>
-      <Header title="Add a Doctor" />
-      <Container maxWidth="sm">
-        <Paper sx={{ padding: 3 }}>
-          <Box mb={2}>
-            <TextField
-              label="Name"
-              placeholder="Name"
-              fullWidth
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value);
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Email"
-              placeholder="Email"
-              fullWidth
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <FormControl sx={{ width: "100%" }}>
-              <InputLabel id="demo-simple-select-label">Specialty</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={specialty}
-                label="Specialty"
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column", // make it a column layout
+        }}
+      >
+        <Header />
+        <Container
+          maxWidth="md"
+          sx={{
+            flex: 1, // fills remaining height below header
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Paper sx={{ padding: 3, width: "100%", maxWidth: "500px" }}>
+            <Typography variant="h4" textAlign={"center"} mb={2}>
+              Add a Doctor
+            </Typography>
+            <Box mb={2}>
+              <TextField
+                label="Name"
+                placeholder="Name"
+                fullWidth
+                value={name}
                 onChange={(event) => {
-                  setSpecialty(event.target.value);
+                  setName(event.target.value);
                 }}
-              >
-                {specialties.map((spe) => (
-                  <MenuItem value={spe._id}>{spe.specialty}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Password"
-              placeholder="Password"
-              type="password"
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Email"
+                placeholder="Email"
+                fullWidth
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                }}
+              />
+            </Box>
+            <Box mb={2}>
+              <FormControl sx={{ width: "100%" }}>
+                <InputLabel id="demo-simple-select-label">Specialty</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={specialty}
+                  label="Specialty"
+                  onChange={(event) => {
+                    setSpecialty(event.target.value);
+                  }}
+                >
+                  {specialties.map((spe) => (
+                    <MenuItem value={spe._id}>{spe.specialty}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Password"
+                placeholder="Password"
+                type="password"
+                fullWidth
+                value={password}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                }}
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Confirm Password"
+                placeholder="Confirm Password"
+                type="password"
+                fullWidth
+                value={confirmPassword}
+                onChange={(event) => {
+                  setConfirmPassword(event.target.value);
+                }}
+              />
+            </Box>
+            <Button
+              color="primary"
+              variant="contained"
               fullWidth
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value);
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Confirm Password"
-              placeholder="Confirm Password"
-              type="password"
-              fullWidth
-              value={confirmPassword}
-              onChange={(event) => {
-                setConfirmPassword(event.target.value);
-              }}
-            />
-          </Box>
-          <Button
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={handleAddDoctor}
-          >
-            Add Doctor
-          </Button>
-        </Paper>
-      </Container>
+              onClick={handleAddDoctor}
+            >
+              Add Doctor
+            </Button>
+          </Paper>
+        </Container>
+      </Box>
     </>
   );
 }

@@ -7,8 +7,17 @@ import {
   MenuItem,
   Paper,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
+import BlockIcon from "@mui/icons-material/Block";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import Header from "./Header";
 import { useEffect, useState } from "react";
 import {
@@ -30,8 +39,9 @@ export default function PatientAppointmentPage() {
   const [cookies] = useCookies(["currentuser"]);
   const { currentuser = {} } = cookies;
   const { token = "" } = currentuser;
-  const [status, setStatus] = useState("all");
+  const [status, setStatus] = useState("scheduled");
   const [appointments, setAppointments] = useState([]);
+  const isMobile = useMediaQuery("(max-width:808px)");
 
   useEffect(() => {
     getAppointmentsByPatientId(id, status)
@@ -44,6 +54,10 @@ export default function PatientAppointmentPage() {
         toast.error(error.response.data.message);
       });
   }, [status]);
+
+  const localDateTime = (date) => {
+    return dayjs(date).local().format("DD MMM YYYY, hh:mm A");
+  };
 
   const handleCancelAppointment = async (app_id) => {
     Swal.fire({
@@ -72,9 +86,8 @@ export default function PatientAppointmentPage() {
 
   return (
     <>
-      <Header title="Patient Manage Appointments" />
-
-      <Container>
+      <Header />
+      <Container maxWidth="lg" sx={{ marginTop: 4, marginBottom: 4 }}>
         <FormControl sx={{ mb: "10px" }}>
           <InputLabel id="demo-simple-select-label">Status</InputLabel>
           <Select
@@ -88,11 +101,183 @@ export default function PatientAppointmentPage() {
           >
             <MenuItem value="all">All Status</MenuItem>
             <MenuItem value="scheduled">Scheduled</MenuItem>
-            <MenuItem value="rescheduled">Rescheduled</MenuItem>
             <MenuItem value="completed">Completed</MenuItem>
             <MenuItem value="cancelled">Cancelled</MenuItem>
           </Select>
         </FormControl>
+        {/* DESKTOP/TABLET VIEW */}
+        {!isMobile ? (
+          <Paper elevation={1} sx={{ marginY: 3, overflowX: "auto" }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>No.</TableCell>
+                  <TableCell>Doctor Name</TableCell>
+                  <TableCell>Specialty</TableCell>
+                  <TableCell>Date & Time</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {appointments.map((appointment, index) => {
+                  const localDateAndTime = localDateTime(appointment.dateTime);
+
+                  return (
+                    <TableRow key={appointment._id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>
+                        <Typography>{appointment.doctorId.name}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography>
+                          {appointment.doctorId.specialty.specialty}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography>{localDateAndTime}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          textTransform={"capitalize"}
+                          color={
+                            appointment.status === "cancelled"
+                              ? "error.main"
+                              : appointment.status === "completed"
+                              ? "success.main"
+                              : "text.primary"
+                          }
+                        >
+                          {appointment.status}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Tooltip
+                          title={
+                            appointment.status === "cancelled" ||
+                            appointment.status === "completed"
+                              ? "Reschedule Appointment"
+                              : "View Appointment"
+                          }
+                        >
+                          <Button
+                            color="primary"
+                            variant="contained"
+                            to={`/appointment/${appointment._id}`}
+                            component={Link}
+                          >
+                            <CalendarMonthIcon />
+                          </Button>
+                        </Tooltip>
+                        {appointment.status === "cancelled" ||
+                        appointment.status === "completed" ? null : (
+                          <Tooltip title="Cancel Appointment">
+                            <Button
+                              color="error"
+                              variant="contained"
+                              sx={{ ml: 1 }}
+                              onClick={() =>
+                                handleCancelAppointment(appointment._id)
+                              }
+                            >
+                              <BlockIcon />
+                            </Button>
+                          </Tooltip>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Paper>
+        ) : (
+          // MOBILE VIEW — CARD STYLE
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}>
+            {appointments.map((appointment, index) => {
+              const localDateAndTime = localDateTime(appointment.dateTime);
+
+              return (
+                <Box
+                  key={appointment._id}
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                    borderRadius: 2,
+                    boxShadow: 1,
+                  }}
+                >
+                  <Box display={"flex"} gap={1}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {index + 1}.
+                    </Typography>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {appointment.doctorId.name}
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Specialty: {appointment.doctorId.specialty.specialty}
+                  </Typography>
+                  <Typography variant="body2">
+                    Date & Time: {localDateAndTime}
+                  </Typography>
+                  <Typography
+                    textTransform={"capitalize"}
+                    variant="body2"
+                    color={
+                      appointment.status === "cancelled"
+                        ? "error.main"
+                        : appointment.status === "completed"
+                        ? "success.main"
+                        : "text.primary"
+                    }
+                  >
+                    Status: {appointment.status}
+                  </Typography>
+
+                  <Box display="flex" justifyContent="flex-end" gap={1} mt={1}>
+                    <Tooltip
+                      title={
+                        appointment.status === "cancelled" ||
+                        appointment.status === "completed"
+                          ? "Reschedule Appointment"
+                          : "View Appointment"
+                      }
+                    >
+                      <Button
+                        to={`/appointment/${appointment._id}`}
+                        component={Link}
+                        size="small"
+                        color="primary"
+                        variant="contained"
+                      >
+                        <CalendarMonthIcon fontSize="small" />
+                      </Button>
+                    </Tooltip>
+
+                    {appointment.status === "cancelled" ||
+                    appointment.status === "completed" ? null : (
+                      <Tooltip title="Cancel Appointment">
+                        <Button
+                          color="error"
+                          variant="contained"
+                          size="small"
+                          onClick={() =>
+                            handleCancelAppointment(appointment._id)
+                          }
+                        >
+                          <BlockIcon fontSize="small" />
+                        </Button>
+                      </Tooltip>
+                    )}
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
         {appointments.length === 0 ? (
           <>
             <Container>
@@ -105,46 +290,6 @@ export default function PatientAppointmentPage() {
             </Container>
           </>
         ) : null}
-        <Paper elevation={1} sx={{ marginY: "20px" }}>
-          {appointments.map((appointment) => {
-            const localDateTime = dayjs(appointment.dateTime)
-              .local()
-              .format("DD MMM YYYY, hh:mm A");
-
-            return (
-              <Box
-                key={appointment._id}
-                display={"flex"}
-                gap={3}
-                sx={{ padding: "20px" }}
-              >
-                <Typography>{appointment.doctorId.name}</Typography>
-                <Typography>
-                  {appointment.doctorId.specialty.specialty}
-                </Typography>
-                <Typography>{localDateTime}</Typography>
-                <Typography>{appointment.status}</Typography>
-                <Button
-                  to={`/appointment/${appointment._id}`}
-                  component={Link}
-                  variant="contained"
-                >
-                  View Appointment
-                </Button>
-                {appointment.status === "cancelled" ||
-                appointment.status === "completed" ? null : (
-                  <Button
-                    color="error"
-                    variant="contained"
-                    onClick={() => handleCancelAppointment(appointment._id)}
-                  >
-                    Cancel
-                  </Button>
-                )}
-              </Box>
-            );
-          })}
-        </Paper>
       </Container>
     </>
   );

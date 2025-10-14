@@ -7,7 +7,14 @@ import {
   MenuItem,
   Paper,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
@@ -27,6 +34,7 @@ export default function AdminAppointmentPage() {
   const { token = "" } = currentuser;
   const [status, setStatus] = useState("all");
   const [appointments, setAppointments] = useState([]);
+  const isMobile = useMediaQuery("(max-width:800px)");
 
   useEffect(() => {
     getAppointments(status)
@@ -39,9 +47,16 @@ export default function AdminAppointmentPage() {
       });
   }, [status]);
 
+  const localDateTime = (date) => {
+    return dayjs(date).local().format("DD MMM YYYY, hh:mm A");
+  };
+
+  const isOlderThan3Years = (date) => {
+    return dayjs().diff(dayjs(date), "year") >= 3;
+  };
   const handleDeleteAppointment = async (id) => {
     Swal.fire({
-      title: "Are you sure you want to cancel this appointment?",
+      title: "Are you sure you want to delete this appointment?",
       text: "You won't be able to revert this",
       icon: "warning",
       showCancelButton: true,
@@ -66,7 +81,7 @@ export default function AdminAppointmentPage() {
 
   return (
     <>
-      <Header title="Doctor Manage Appointments" />
+      <Header />
       <Container>
         <FormControl sx={{ mb: "10px" }}>
           <InputLabel id="demo-simple-select-label">Status</InputLabel>
@@ -81,53 +96,156 @@ export default function AdminAppointmentPage() {
           >
             <MenuItem value="all">All Status</MenuItem>
             <MenuItem value="scheduled">Scheduled</MenuItem>
-            <MenuItem value="rescheduled">Rescheduled</MenuItem>
             <MenuItem value="completed">Completed</MenuItem>
             <MenuItem value="cancelled">Cancelled</MenuItem>
           </Select>
         </FormControl>
 
-        <Paper elevation={1} sx={{ marginY: "20px" }}>
-          {appointments.map((appointment, index) => {
-            const localDateTime = dayjs(appointment.dateTime)
-              .local()
-              .format("DD MMM YYYY, hh:mm A");
+        {/* DESKTOP/TABLET VIEW */}
+        {!isMobile ? (
+          <Paper elevation={1} sx={{ marginY: 3, overflowX: "auto" }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>No.</TableCell>
+                  <TableCell>Patient Name</TableCell>
+                  <TableCell>Patient Email</TableCell>
+                  <TableCell>Date & Time</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {appointments.map((appointment, index) => {
+                  const localDateAndTime = localDateTime(appointment.dateTime);
 
-            const isOlderThan3Years =
-              dayjs().diff(dayjs(appointment.dateTime), "year") >= 3;
+                  const oldAppointment = isOlderThan3Years(
+                    appointment.dateTime
+                  );
 
-            return (
-              <Box
-                key={appointment._id}
-                display={"flex"}
-                gap={3}
-                sx={{ padding: "20px" }}
-              >
-                <Typography>{index + 1}</Typography>
-                <Typography>{appointment.patientId.name}</Typography>
-                <Typography>{appointment.patientId.email}</Typography>
-                <Typography>{localDateTime}</Typography>
-                <Typography>{appointment.status}</Typography>
-                {isOlderThan3Years && (
-                  <Button
-                    color="error"
-                    variant="contained"
-                    onClick={() => handleDeleteAppointment(appointment._id)}
+                  return (
+                    <TableRow key={appointment._id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>
+                        <Typography>{appointment.patientId.name}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography>{appointment.patientId.email}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography>{localDateAndTime}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          textTransform={"capitalize"}
+                          color={
+                            appointment.status === "cancelled"
+                              ? "error.main"
+                              : appointment.status === "completed"
+                              ? "success.main"
+                              : "text.primary"
+                          }
+                        >
+                          {appointment.status}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        {oldAppointment && (
+                          <>
+                            <Tooltip title="Delete Appointment">
+                              <Button
+                                color="error"
+                                variant="contained"
+                                onClick={() =>
+                                  handleDeleteAppointment(appointment._id)
+                                }
+                              >
+                                Delete
+                              </Button>
+                            </Tooltip>
+                          </>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Paper>
+        ) : (
+          // MOBILE VIEW — CARD STYLE
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}>
+            {appointments.map((appointment, index) => {
+              const localDateAndTime = localDateTime(appointment.dateTime);
+
+              const oldAppointment = isOlderThan3Years(appointment.dateTime);
+
+              return (
+                <Box
+                  key={appointment._id}
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                    borderRadius: 2,
+                    boxShadow: 1,
+                  }}
+                >
+                  <Box display={"flex"} gap={1}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {index + 1}.
+                    </Typography>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {appointment.patientId.name}
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Specialty: {appointment.patientId.email}
+                  </Typography>
+                  <Typography variant="body2">
+                    Date & Time: {localDateAndTime}
+                  </Typography>
+                  <Typography
+                    textTransform={"capitalize"}
+                    variant="body2"
+                    color={
+                      appointment.status === "cancelled"
+                        ? "error.main"
+                        : appointment.status === "completed"
+                        ? "success.main"
+                        : "text.primary"
+                    }
                   >
-                    Delete
-                  </Button>
-                )}
-              </Box>
-            );
-          })}
-          {appointments.length === 0 ? (
-            <>
-              <Container>
-                <Typography>No appointments found.</Typography>
-              </Container>
-            </>
-          ) : null}
-        </Paper>
+                    Status: {appointment.status}
+                  </Typography>
+                  {oldAppointment && (
+                    <>
+                      <Tooltip title="Delete Appointment">
+                        <Button
+                          color="error"
+                          variant="contained"
+                          onClick={() =>
+                            handleDeleteAppointment(appointment._id)
+                          }
+                        >
+                          Delete
+                        </Button>
+                      </Tooltip>
+                    </>
+                  )}
+                </Box>
+              );
+            })}
+          </Box>
+        )}
+        {appointments.length === 0 ? (
+          <>
+            <Container>
+              <Typography>No appointments found.</Typography>
+            </Container>
+          </>
+        ) : null}
       </Container>
     </>
   );

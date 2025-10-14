@@ -11,6 +11,7 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useState, useEffect, useMemo } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate, useParams } from "react-router";
@@ -145,9 +146,18 @@ export default function AppointmentAdd() {
 
   return (
     <>
-      <Header title="Book an Appointment" />
+      <Header />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Container sx={{ marginY: "30px" }}>
+          <Button
+            sx={{ marginBottom: "20px" }}
+            onClick={() => {
+              navigate("/doctors");
+            }}
+          >
+            <ArrowBackIcon />
+            Go Back
+          </Button>
           <Paper elevation={1} sx={{ padding: "20px" }}>
             <Box mb={2} display={"flex"} gap={3}>
               <TextField
@@ -179,7 +189,7 @@ export default function AppointmentAdd() {
                 </Select>
               </FormControl>
             </Box>
-            <Grid container spacing={1}>
+            <Grid container spacing={1} mb={2}>
               <Grid size={{ xs: 12, md: 6 }}>
                 <DateCalendar
                   views={["year", "month", "day"]}
@@ -196,7 +206,7 @@ export default function AppointmentAdd() {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
-                <Typography>Select a time: </Typography>
+                <Typography mb={2}>Select a time: </Typography>
                 <Grid container spacing={2}>
                   {timeSlots.map((time) => (
                     <Grid
@@ -214,7 +224,6 @@ export default function AppointmentAdd() {
                           setSelectedTime(time);
                         }}
                         sx={{
-                          margin: "2.5px",
                           textTransform: "none",
                           fontWeight: "bold",
                           borderColor: "#2196f3",

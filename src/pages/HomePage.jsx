@@ -4,7 +4,7 @@ import Header from "../components/Header";
 export default function HomePage() {
   return (
     <>
-      <Header title={"Home"} />
+      <Header />
       <Container>
         <Typography>This is the home page</Typography>
       </Container>

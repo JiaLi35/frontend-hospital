@@ -69,106 +69,132 @@ export default function SignUpPage() {
 
   return (
     <>
-      <Header title={"Sign Up"} />
-      <Container maxWidth="sm">
-        <Paper sx={{ padding: 3 }}>
-          <Box mb={2}>
-            <TextField
-              label="Name"
-              placeholder="Name"
+      <Box
+        sx={{
+          minHeight: "100vh",
+          backgroundImage: "url('/images/background.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          display: "flex",
+          flexDirection: "column", // make it a column layout
+        }}
+      >
+        <Header />
+        <Container
+          maxWidth="md"
+          sx={{
+            flex: 1, // fills remaining height below header
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Paper sx={{ padding: 3, width: "100%", maxWidth: "500px" }}>
+            <Typography variant="h4" textAlign={"center"} mb={2}>
+              Sign Up
+            </Typography>
+            <Box mb={2}>
+              <TextField
+                label="Name"
+                placeholder="Name"
+                fullWidth
+                value={name}
+                onChange={(event) => {
+                  setName(event.target.value);
+                }}
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Email"
+                placeholder="Email"
+                fullWidth
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                }}
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="NRIC No."
+                type="number"
+                placeholder="NRIC No."
+                fullWidth
+                value={nric}
+                onChange={(event) => {
+                  setNric(event.target.value);
+                }}
+                onInput={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "") // remove non-digits
+                    .slice(0, 12); // limit to 12 digits
+                }}
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Phone Number"
+                type="number"
+                placeholder="+60"
+                fullWidth
+                value={phoneNumber}
+                onChange={(event) => {
+                  setPhoneNumber(event.target.value);
+                }}
+                onInput={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "") // remove non-digits
+                    .slice(0, 10); // limit to 12 digits
+                }}
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Password"
+                placeholder="Password"
+                type="password"
+                fullWidth
+                value={password}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                }}
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Confirm Password"
+                placeholder="Confirm Password"
+                type="password"
+                fullWidth
+                value={confirmPassword}
+                onChange={(event) => {
+                  setConfirmPassword(event.target.value);
+                }}
+              />
+            </Box>
+            <Button
+              color="primary"
+              variant="contained"
               fullWidth
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value);
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Email"
-              placeholder="Email"
-              fullWidth
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="NRIC No."
-              type="number"
-              placeholder="NRIC No."
-              fullWidth
-              value={nric}
-              onChange={(event) => {
-                setNric(event.target.value);
-              }}
-              onInput={(e) => {
-                e.target.value = e.target.value
-                  .replace(/\D/g, "") // remove non-digits
-                  .slice(0, 12); // limit to 12 digits
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Phone Number"
-              type="number"
-              placeholder="+60"
-              fullWidth
-              value={phoneNumber}
-              onChange={(event) => {
-                setPhoneNumber(event.target.value);
-              }}
-              onInput={(e) => {
-                e.target.value = e.target.value
-                  .replace(/\D/g, "") // remove non-digits
-                  .slice(0, 10); // limit to 12 digits
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Password"
-              placeholder="Password"
-              type="password"
-              fullWidth
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value);
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Confirm Password"
-              placeholder="Confirm Password"
-              type="password"
-              fullWidth
-              value={confirmPassword}
-              onChange={(event) => {
-                setConfirmPassword(event.target.value);
-              }}
-            />
-          </Box>
-          <Button
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={handleSignUp}
-          >
-            Sign Up
-          </Button>
-          <Box sx={{ display: "flex" }}>
-            <Typography>Already have an account? Click</Typography>
-            <Link to="/login" component={Links}>
-              here
-            </Link>
-            <Typography>to log in</Typography>
-          </Box>
-        </Paper>
-      </Container>
+              onClick={handleSignUp}
+            >
+              Sign Up
+            </Button>
+            <Box sx={{ display: "flex", marginTop: "10px" }}>
+              <Typography>
+                Already have an account? Click
+                <Link to="/login" component={Links} sx={{ marginX: "3px" }}>
+                  here
+                </Link>
+                to log in
+              </Typography>
+            </Box>
+          </Paper>
+        </Container>
+      </Box>
     </>
   );
 }

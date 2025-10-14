@@ -45,50 +45,76 @@ export default function LoginPage() {
 
   return (
     <>
-      <Header title={"Login"} />
-      <Container maxWidth="sm">
-        <Paper sx={{ padding: 3 }}>
-          <Box mb={2}>
-            <TextField
-              label="Email"
-              type="email"
-              placeholder="Email"
+      <Box
+        sx={{
+          minHeight: "100vh",
+          backgroundImage:
+            "url('https://www.bcie.org/fileadmin/_processed_/6/a/csm_hospital_web_b185b30ce1.jpg')",
+          backgroundPosition: "start",
+          backgroundRepeat: "no-repeat",
+          display: "flex",
+          flexDirection: "column", // make it a column layout
+        }}
+      >
+        <Header />
+        <Container
+          maxWidth="xl"
+          sx={{
+            flex: 1, // fills remaining height below header
+            height: "100%",
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          <Paper sx={{ padding: 3, width: "100%", maxWidth: "435px" }}>
+            <Typography variant="h4" textAlign={"center"} mb={2}>
+              Login
+            </Typography>
+            <Box mb={2}>
+              <TextField
+                label="Email"
+                type="email"
+                placeholder="Email"
+                fullWidth
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                }}
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Password"
+                placeholder="Password"
+                type="password"
+                fullWidth
+                value={password}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                }}
+              />
+            </Box>
+            <Button
+              color="primary"
+              variant="contained"
               fullWidth
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Password"
-              placeholder="Password"
-              type="password"
-              fullWidth
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value);
-              }}
-            />
-          </Box>
-          <Button
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={handleLogin}
-          >
-            Log In
-          </Button>
-          <Box sx={{ display: "flex" }}>
-            <Typography>Already have an account? Click</Typography>
-            <Link to="/signup" component={Links}>
-              here
-            </Link>
-            <Typography>to sign up</Typography>
-          </Box>
-        </Paper>
-      </Container>
+              onClick={handleLogin}
+            >
+              Log In
+            </Button>
+            <Box sx={{ display: "flex", marginTop: "10px" }}>
+              <Typography>
+                Don't have an account? Click
+                <Link to="/signup" component={Links} sx={{ marginX: "3px" }}>
+                  here
+                </Link>
+                to sign up
+              </Typography>
+            </Box>
+          </Paper>
+        </Container>
+      </Box>
     </>
   );
 }

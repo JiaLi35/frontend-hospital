@@ -6,6 +6,7 @@ import {
   TextField,
   Button,
   Typography,
+  Tooltip,
 } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -13,6 +14,8 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   getSpecialties,
   getSpecialty,
@@ -120,7 +123,7 @@ export default function SpecialtiesPage() {
 
   return (
     <>
-      <Header title="Manage Specialties" />
+      <Header />
       <Container maxWidth="lg" sx={{ py: 2 }}>
         <Typography variant="h5" mb={2}>
           Specialties
@@ -158,13 +161,11 @@ export default function SpecialtiesPage() {
         </Paper>
 
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <Table aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                <TableCell align="right" sx={{ paddingRight: "130px" }}>
-                  Actions
-                </TableCell>
+                <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -184,20 +185,24 @@ export default function SpecialtiesPage() {
                         justifyContent: "flex-end",
                       }}
                     >
-                      <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={() => handleUpdateSpecialty(spe._id)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        color="error"
-                        variant="contained"
-                        onClick={() => handleDeleteSpecialty(spe._id)}
-                      >
-                        Delete
-                      </Button>
+                      <Tooltip title="Edit Specialty">
+                        <Button
+                          color="primary"
+                          variant="contained"
+                          onClick={() => handleUpdateSpecialty(spe._id)}
+                        >
+                          <EditIcon />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title="Delete Specialty">
+                        <Button
+                          color="error"
+                          variant="contained"
+                          onClick={() => handleDeleteSpecialty(spe._id)}
+                        >
+                          <DeleteIcon />
+                        </Button>
+                      </Tooltip>
                     </Box>
                   </TableCell>
                 </TableRow>

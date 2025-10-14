@@ -85,7 +85,7 @@ export default function DoctorFind() {
 
   return (
     <>
-      <Header title={"Find a Doctor"} />
+      <Header />
       <Container>
         <Box sx={{ py: 2 }}>
           <FormControl>

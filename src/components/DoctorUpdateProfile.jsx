@@ -99,112 +99,129 @@ export default function DoctorUpdateProfile() {
 
   return (
     <>
-      <Header title="Edit Doctor Profile" />
-      <Container maxWidth="sm">
-        <Paper sx={{ padding: 3 }}>
-          <Box mb={2}>
-            <TextField
-              label="Name"
-              placeholder="Name"
-              fullWidth
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value);
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Email"
-              disabled
-              placeholder="Email"
-              fullWidth
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-              }}
-            />
-          </Box>
-          <Box mb={2}>
-            <FormControl sx={{ width: "100%" }}>
-              <InputLabel id="demo-simple-select-label">Specialty</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={specialty}
-                label="Specialty"
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column", // make it a column layout
+        }}
+      >
+        <Header />
+        <Container
+          maxWidth="md"
+          sx={{
+            flex: 1, // fills remaining height below header
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Paper sx={{ padding: 3, width: "100%", maxWidth: "500px" }}>
+            <Box mb={2}>
+              <TextField
+                label="Name"
+                placeholder="Name"
+                fullWidth
+                value={name}
                 onChange={(event) => {
-                  setSpecialty(event.target.value);
+                  setName(event.target.value);
                 }}
-              >
-                {specialties.map((spe) => (
-                  <MenuItem value={spe._id} key={spe._id}>
-                    {spe.specialty}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-          <Box mb={2}>
-            <TextField
-              label="Biography"
-              placeholder="Biography"
-              fullWidth
-              value={biography}
-              onChange={(event) => {
-                setBiography(event.target.value);
-              }}
-            />
-          </Box>
-          <Box
-            mb={2}
-            sx={{ display: "flex", gap: "10px", alignItems: "center" }}
-          >
-            {image ? (
-              <>
-                <img src={API_URL + image} width="200px" />
-                <Button
-                  color="info"
-                  variant="contained"
-                  size="small"
-                  onClick={() => setImage(null)}
-                >
-                  Remove
-                </Button>
-              </>
-            ) : (
-              <Button
-                component="label"
-                role={undefined}
-                variant="contained"
-                tabIndex={-1}
-                startIcon={<CloudUploadIcon />}
-              >
-                Upload image
-                <VisuallyHiddenInput
-                  type="file"
-                  onChange={async (event) => {
-                    const data = await uploadImage(event.target.files[0]);
-                    console.log(data);
-                    // {image_url: "uploads\\image.jpg"}
-                    // set the image url into state
-                    setImage(data.image_url);
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Email"
+                disabled
+                placeholder="Email"
+                fullWidth
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                }}
+              />
+            </Box>
+            <Box mb={2}>
+              <FormControl sx={{ width: "100%" }}>
+                <InputLabel id="demo-simple-select-label">Specialty</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={specialty}
+                  label="Specialty"
+                  onChange={(event) => {
+                    setSpecialty(event.target.value);
                   }}
-                  accept="image/*"
-                />
-              </Button>
-            )}
-          </Box>
-          <Button
-            color="primary"
-            variant="contained"
-            fullWidth
-            onClick={handleUpdateDoctor}
-          >
-            Update Profile
-          </Button>
-        </Paper>
-      </Container>
+                >
+                  {specialties.map((spe) => (
+                    <MenuItem value={spe._id} key={spe._id}>
+                      {spe.specialty}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+            <Box mb={2}>
+              <TextField
+                label="Biography"
+                placeholder="Biography"
+                fullWidth
+                value={biography}
+                onChange={(event) => {
+                  setBiography(event.target.value);
+                }}
+              />
+            </Box>
+            <Box
+              mb={2}
+              sx={{ display: "flex", gap: "10px", alignItems: "center" }}
+            >
+              {image ? (
+                <>
+                  <img src={API_URL + image} width="200px" />
+                  <Button
+                    color="info"
+                    variant="contained"
+                    size="small"
+                    onClick={() => setImage(null)}
+                  >
+                    Remove
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  component="label"
+                  role={undefined}
+                  variant="contained"
+                  tabIndex={-1}
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload image
+                  <VisuallyHiddenInput
+                    type="file"
+                    onChange={async (event) => {
+                      const data = await uploadImage(event.target.files[0]);
+                      console.log(data);
+                      // {image_url: "uploads\\image.jpg"}
+                      // set the image url into state
+                      setImage(data.image_url);
+                    }}
+                    accept="image/*"
+                  />
+                </Button>
+              )}
+            </Box>
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              onClick={handleUpdateDoctor}
+            >
+              Update Profile
+            </Button>
+          </Paper>
+        </Container>
+      </Box>
     </>
   );
 }
