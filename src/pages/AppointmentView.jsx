@@ -39,6 +39,8 @@ export default function AppointmentView() {
   const [patientId, setPatientId] = useState("");
   const [date, setDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [status, setStatus] = useState("");
+
   const timeSlots = useMemo(
     () => [
       "09:00 AM",
@@ -87,6 +89,7 @@ export default function AppointmentView() {
         // Format to something like "09:30 AM"
         const formattedTime = dayjsDateTime.format("hh:mm A");
         setSelectedTime(formattedTime);
+        setStatus(appointmentData ? appointmentData.status : "");
       })
       .catch((error) => {
         console.log(error);
@@ -169,6 +172,11 @@ export default function AppointmentView() {
                 <DateCalendar
                   views={["year", "month", "day"]}
                   autoFocus
+                  disabled={
+                    status === "cancelled" || status === "completed"
+                      ? true
+                      : false
+                  }
                   disablePast
                   disableHighlightToday
                   minDate={today.add(1, "day")}
@@ -191,6 +199,11 @@ export default function AppointmentView() {
                       gap={3}
                     >
                       <Button
+                        disabled={
+                          status === "cancelled" || status === "completed"
+                            ? true
+                            : false
+                        }
                         fullWidth
                         variant={
                           selectedTime === time ? "contained" : "outlined"
@@ -277,6 +290,9 @@ export default function AppointmentView() {
               color="primary"
               variant="contained"
               fullWidth
+              disabled={
+                status === "cancelled" || status === "completed" ? true : false
+              }
               onClick={handleUpdateAppointment}
             >
               Reschedule Appointment

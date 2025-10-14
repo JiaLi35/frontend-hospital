@@ -51,16 +51,15 @@ export default function SpecialtiesPage() {
 
   const handleAddNewSpecialty = async (specialty) => {
     if (!specialty) {
-      toast.error("Please fill in the field!");
+      toast.error("Please fill in the field");
     } else {
       try {
         // 2. trigger the API to create new specialty
         await addSpecialty(specialty);
-        // 3.
         setSpecialty("");
         const updatedCategories = await getSpecialties();
         setSpecialties(updatedCategories);
-        toast("New Specialty has been added");
+        toast.success("New Specialty has been added");
       } catch (error) {
         toast.error(error.message);
       }
@@ -104,12 +103,17 @@ export default function SpecialtiesPage() {
     }).then(async (result) => {
       // once user confirm, then we delete the specialty
       if (result.isConfirmed) {
-        // delete specialty in the backend
-        await deleteSpecialty(id);
-        // method #2: get the new data from the backend
-        const updatedSpecialty = await getSpecialties();
-        setSpecialties(updatedSpecialty);
-        toast.success("Specialty has been deleted");
+        try {
+          // delete specialty in the backend
+          await deleteSpecialty(id);
+          // method #2: get the new data from the backend
+          const updatedSpecialty = await getSpecialties();
+          setSpecialties(updatedSpecialty);
+          toast.success("Specialty has been deleted");
+        } catch (error) {
+          console.log(error);
+          toast.error(error.response.data.message);
+        }
       }
     });
   };

@@ -1,6 +1,13 @@
 import axios from "axios";
 import { API_URL } from "./constants";
 
+export async function getAppointments(status) {
+  const response = await axios.get(
+    API_URL + "appointments/" + (status === "all" ? "" : "?status=" + status)
+  );
+  return response.data;
+}
+
 export async function getAppointmentsByPatientId(patientId, status) {
   const response = await axios.get(
     API_URL +
@@ -58,6 +65,7 @@ export async function updateAppointment(id, doctorId, patientId, dateTime) {
 export async function completeAppointment(id, token) {
   const response = await axios.put(
     API_URL + "appointments/complete-appointment/" + id,
+    {},
     {
       headers: {
         Authorization: "Bearer " + token,
@@ -69,7 +77,8 @@ export async function completeAppointment(id, token) {
 
 export async function cancelAppointment(id) {
   const response = await axios.put(
-    API_URL + "appointments/cancel-appointment/" + id
+    API_URL + "appointments/cancel-appointment/" + id,
+    {}
   );
   return response.data;
 }

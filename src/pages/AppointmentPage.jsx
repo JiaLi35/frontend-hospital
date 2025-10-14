@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import PatientAppointmentPage from "../components/PatientAppointmentPage";
 import DoctorAppointmentPage from "../components/DoctorAppointmentPage";
 import { toast } from "sonner";
+import AdminAppointmentPage from "../components/AdminAppointmentPage";
 
 export default function AppointmentPage() {
   const navigate = useNavigate();
@@ -19,6 +20,12 @@ export default function AppointmentPage() {
     return (
       <>
         <PatientAppointmentPage />
+      </>
+    );
+  } else if (currentuser && currentuser.role === "admin") {
+    return (
+      <>
+        <AdminAppointmentPage />
       </>
     );
   } else {

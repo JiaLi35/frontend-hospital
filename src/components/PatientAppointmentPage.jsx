@@ -11,7 +11,10 @@ import {
 } from "@mui/material";
 import Header from "./Header";
 import { useEffect, useState } from "react";
-import { getAppointmentsByPatientId } from "../api/api_appointments";
+import {
+  getAppointmentsByPatientId,
+  cancelAppointment,
+} from "../api/api_appointments";
 import { Link, useParams } from "react-router";
 import { toast } from "sonner";
 import dayjs from "dayjs";
@@ -19,6 +22,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
+import Swal from "sweetalert2";
 
 export default function PatientAppointmentPage() {
   const { id } = useParams();
@@ -36,6 +40,31 @@ export default function PatientAppointmentPage() {
         toast.error(error.response.data.message);
       });
   }, [status]);
+
+  const handleCancelAppointment = async (app_id) => {
+    Swal.fire({
+      title: "Are you sure you want to cancel this appointment?",
+      text: "You won't be able to revert this",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    }).then(async (result) => {
+      // once user confirm, then we delete the specialty
+      if (result.isConfirmed) {
+        try {
+          await cancelAppointment(app_id);
+          const updated = await getAppointmentsByPatientId(id, status);
+          setAppointments(updated);
+          toast.success("Successfully cancelled appointment");
+        } catch (error) {
+          console.log(error);
+          toast.error(error.response.data.message);
+        }
+      }
+    });
+  };
 
   return (
     <>
@@ -98,7 +127,17 @@ export default function PatientAppointmentPage() {
                 >
                   View Appointment
                 </Button>
-                <Button color="error" variant="contained">
+                <Button
+                  color="error"
+                  variant="contained"
+                  disabled={
+                    appointment.status === "cancelled" ||
+                    appointment.status === "completed"
+                      ? true
+                      : false
+                  }
+                  onClick={() => handleCancelAppointment(appointment._id)}
+                >
                   Cancel
                 </Button>
               </Box>
