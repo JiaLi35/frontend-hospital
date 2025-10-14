@@ -55,7 +55,7 @@ export default function SpecialtiesPage() {
     } else {
       try {
         // 2. trigger the API to create new specialty
-        await addSpecialty(specialty);
+        await addSpecialty(specialty, token);
         setSpecialty("");
         const updatedCategories = await getSpecialties();
         setSpecialties(updatedCategories);
@@ -83,7 +83,7 @@ export default function SpecialtiesPage() {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await updateSpecialty(id, result.value);
+        await updateSpecialty(id, result.value, token);
         const updatedSpecialty = await getSpecialties();
         setSpecialties(updatedSpecialty);
         toast.success("Specialty updated successfully");
@@ -105,7 +105,7 @@ export default function SpecialtiesPage() {
       if (result.isConfirmed) {
         try {
           // delete specialty in the backend
-          await deleteSpecialty(id);
+          await deleteSpecialty(id, token);
           // method #2: get the new data from the backend
           const updatedSpecialty = await getSpecialties();
           setSpecialties(updatedSpecialty);

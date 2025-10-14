@@ -22,12 +22,17 @@ import { DateCalendar } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { useCookies } from "react-cookie";
 dayjs.extend(customParseFormat);
 
 export default function AppointmentView() {
+  const [cookies] = useCookies(["currentuser"]);
+  const { currentuser } = cookies;
+  const { token } = currentuser;
   const { id } = useParams();
   const navigate = useNavigate();
   const today = dayjs();
+  const [userId, setUserId] = useState("");
   const [specialties, setSpecialties] = useState([]);
   const [doctorId, setDoctorId] = useState("");
   const [doctorName, setDoctorName] = useState("");
@@ -106,6 +111,17 @@ export default function AppointmentView() {
       });
   }, []);
 
+  useEffect(() => {
+    if (currentuser && currentuser.role === "patient") {
+      setUserId(patientId);
+    } else if (currentuser && currentuser.role === "doctor") {
+      setUserId(doctorId);
+    } else {
+      navigate("/login");
+      toast.error("Something went wrong, please login first.");
+    }
+  }, [currentuser, patientId, doctorId]);
+
   const handleUpdateAppointment = async () => {
     // Combine date and time
     const combinedDateTime = dayjs(
@@ -120,11 +136,12 @@ export default function AppointmentView() {
         id,
         doctorId,
         patientId,
-        dateTime
+        dateTime,
+        token
       );
       console.log(updatedAppointment);
       toast.success("Successfully updated Appointment");
-      navigate(`/manage-appointments/${patientId}`);
+      navigate(`/manage-appointments/${userId}`);
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);

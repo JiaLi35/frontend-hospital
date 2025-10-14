@@ -72,9 +72,9 @@ export default function SignUpPage() {
       <Header title={"Sign Up"} />
       <Container maxWidth="sm">
         <Paper sx={{ padding: 3 }}>
-          <Typography>Name</Typography>
           <Box mb={2}>
             <TextField
+              label="Name"
               placeholder="Name"
               fullWidth
               value={name}
@@ -83,9 +83,9 @@ export default function SignUpPage() {
               }}
             />
           </Box>
-          <Typography>Email</Typography>
           <Box mb={2}>
             <TextField
+              label="Email"
               placeholder="Email"
               fullWidth
               value={email}
@@ -94,9 +94,9 @@ export default function SignUpPage() {
               }}
             />
           </Box>
-          <Typography>NRIC no.</Typography>
           <Box mb={2}>
             <TextField
+              label="NRIC No."
               type="number"
               placeholder="NRIC No."
               fullWidth
@@ -111,9 +111,9 @@ export default function SignUpPage() {
               }}
             />
           </Box>
-          <Typography>Phone Number</Typography>
           <Box mb={2}>
             <TextField
+              label="Phone Number"
               type="number"
               placeholder="+60"
               fullWidth
@@ -128,9 +128,9 @@ export default function SignUpPage() {
               }}
             />
           </Box>
-          <Typography>Password</Typography>
           <Box mb={2}>
             <TextField
+              label="Password"
               placeholder="Password"
               type="password"
               fullWidth
@@ -140,9 +140,9 @@ export default function SignUpPage() {
               }}
             />
           </Box>
-          <Typography>Confirm Password</Typography>
           <Box mb={2}>
             <TextField
+              label="Confirm Password"
               placeholder="Confirm Password"
               type="password"
               fullWidth

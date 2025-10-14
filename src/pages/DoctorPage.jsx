@@ -2,10 +2,13 @@ import { Button, Container, Paper, Typography } from "@mui/material";
 import Header from "../components/Header";
 import { Link, useParams } from "react-router";
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { getDoctorById } from "../api/api_doctors";
 
 export default function DoctorPage() {
   const { id } = useParams();
+  const [cookies] = useCookies("currentuser");
+  const { currentuser = {} } = cookies;
   const [name, setName] = useState("");
   const [biography, setBiography] = useState("");
   const [specialty, setSpecialty] = useState("");
@@ -35,9 +38,15 @@ export default function DoctorPage() {
           <Typography>Specialty: {specialty}</Typography>
           <Typography>Biography: {biography}</Typography>
           {/* <Typography>Name: {name}</Typography> */}
-          <Button to={`/book-appointment/${id}`} component={Link}>
-            Book appointment
-          </Button>
+          {currentuser && currentuser.role === "patient" ? (
+            <Button
+              size="small"
+              to={`/book-appointment/${id}`}
+              component={Link}
+            >
+              Book an Appointment
+            </Button>
+          ) : null}
         </Paper>
       </Container>
     </>

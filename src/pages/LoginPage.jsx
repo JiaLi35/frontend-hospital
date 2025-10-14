@@ -48,9 +48,9 @@ export default function LoginPage() {
       <Header title={"Login"} />
       <Container maxWidth="sm">
         <Paper sx={{ padding: 3 }}>
-          <Typography>Email</Typography>
           <Box mb={2}>
             <TextField
+              label="Email"
               type="email"
               placeholder="Email"
               fullWidth
@@ -60,9 +60,9 @@ export default function LoginPage() {
               }}
             />
           </Box>
-          <Typography>Password</Typography>
           <Box mb={2}>
             <TextField
+              label="Password"
               placeholder="Password"
               type="password"
               fullWidth

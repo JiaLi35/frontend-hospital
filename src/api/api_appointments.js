@@ -50,13 +50,24 @@ export async function newAppointment(doctorId, dateTime, patientId, token) {
   return response.data;
 }
 
-export async function updateAppointment(id, doctorId, patientId, dateTime) {
+export async function updateAppointment(
+  id,
+  doctorId,
+  patientId,
+  dateTime,
+  token
+) {
   const response = await axios.put(
     API_URL + "appointments/update-appointment/" + id,
     {
       doctorId,
       patientId,
       dateTime,
+    },
+    {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
     }
   );
   return response.data;
@@ -75,10 +86,15 @@ export async function completeAppointment(id, token) {
   return response.data;
 }
 
-export async function cancelAppointment(id) {
+export async function cancelAppointment(id, token) {
   const response = await axios.put(
     API_URL + "appointments/cancel-appointment/" + id,
-    {}
+    {},
+    {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    }
   );
   return response.data;
 }

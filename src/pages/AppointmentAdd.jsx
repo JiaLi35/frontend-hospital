@@ -74,6 +74,11 @@ export default function AppointmentAdd() {
   */
 
   useEffect(() => {
+    if (!currentuser || currentuser.role !== "patient") {
+      toast.error("Please login or signup as a patient first.");
+      navigate("/signup");
+    }
+
     getDoctorById(id)
       .then((doctorData) => {
         console.log(doctorData);
@@ -138,170 +143,162 @@ export default function AppointmentAdd() {
     }
   };
 
-  if (currentuser && currentuser.role === "patient") {
-    return (
-      <>
-        <Header title="Book an Appointment" />
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Container sx={{ marginY: "30px" }}>
-            <Paper elevation={1} sx={{ padding: "20px" }}>
-              <Box mb={2} display={"flex"} gap={3}>
-                <TextField
-                  label="Doctor Name"
-                  placeholder="Name"
-                  fullWidth
+  return (
+    <>
+      <Header title="Book an Appointment" />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Container sx={{ marginY: "30px" }}>
+          <Paper elevation={1} sx={{ padding: "20px" }}>
+            <Box mb={2} display={"flex"} gap={3}>
+              <TextField
+                label="Doctor Name"
+                placeholder="Name"
+                fullWidth
+                disabled
+                value={doctorName}
+                onChange={(event) => {
+                  setDoctorName(event.target.value);
+                }}
+              />
+              <FormControl sx={{ width: "100%" }}>
+                <InputLabel id="demo-simple-select-label">Specialty</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
                   disabled
-                  value={doctorName}
+                  value={specialty}
+                  label="Specialty"
                   onChange={(event) => {
-                    setDoctorName(event.target.value);
+                    setSpecialty(event.target.value);
+                  }}
+                >
+                  {specialties.map((spe) => (
+                    <MenuItem value={spe._id} key={spe._id}>
+                      {spe.specialty}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+            <Grid container spacing={1}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <DateCalendar
+                  views={["year", "month", "day"]}
+                  autoFocus
+                  disablePast
+                  disableHighlightToday
+                  minDate={today.add(1, "day")}
+                  maxDate={today.add(1, "year")}
+                  value={date}
+                  onChange={(newValue) => {
+                    setSelectedTime(null);
+                    setDate(newValue);
                   }}
                 />
-                <FormControl sx={{ width: "100%" }}>
-                  <InputLabel id="demo-simple-select-label">
-                    Specialty
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    disabled
-                    value={specialty}
-                    label="Specialty"
-                    onChange={(event) => {
-                      setSpecialty(event.target.value);
-                    }}
-                  >
-                    {specialties.map((spe) => (
-                      <MenuItem value={spe._id} key={spe._id}>
-                        {spe.specialty}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-              <Grid container spacing={1}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <DateCalendar
-                    views={["year", "month", "day"]}
-                    autoFocus
-                    disablePast
-                    disableHighlightToday
-                    minDate={today.add(1, "day")}
-                    maxDate={today.add(1, "year")}
-                    value={date}
-                    onChange={(newValue) => {
-                      setSelectedTime(null);
-                      setDate(newValue);
-                    }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography>Select a time: </Typography>
-                  <Grid container spacing={2}>
-                    {timeSlots.map((time) => (
-                      <Grid
-                        item
-                        size={{ xs: 12, sm: 6, md: 4, lg: 4 }}
-                        key={time}
-                        gap={3}
-                      >
-                        <Button
-                          fullWidth
-                          variant={
-                            selectedTime === time ? "contained" : "outlined"
-                          }
-                          onClick={() => {
-                            setSelectedTime(time);
-                          }}
-                          sx={{
-                            margin: "2.5px",
-                            textTransform: "none",
-                            fontWeight: "bold",
-                            borderColor: "#2196f3",
-                            color: selectedTime === time ? "#fff" : "#2196f3",
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography>Select a time: </Typography>
+                <Grid container spacing={2}>
+                  {timeSlots.map((time) => (
+                    <Grid
+                      item
+                      size={{ xs: 12, sm: 6, md: 4, lg: 4 }}
+                      key={time}
+                      gap={3}
+                    >
+                      <Button
+                        fullWidth
+                        variant={
+                          selectedTime === time ? "contained" : "outlined"
+                        }
+                        onClick={() => {
+                          setSelectedTime(time);
+                        }}
+                        sx={{
+                          margin: "2.5px",
+                          textTransform: "none",
+                          fontWeight: "bold",
+                          borderColor: "#2196f3",
+                          color: selectedTime === time ? "#fff" : "#2196f3",
+                          backgroundColor:
+                            selectedTime === time ? "#2196f3" : "transparent",
+                          "&:hover": {
                             backgroundColor:
-                              selectedTime === time ? "#2196f3" : "transparent",
-                            "&:hover": {
-                              backgroundColor:
-                                selectedTime === time ? "#1976d2" : "#e3f2fd",
-                            },
-                          }}
-                        >
-                          {time}
-                        </Button>
-                      </Grid>
-                    ))}
-                  </Grid>
+                              selectedTime === time ? "#1976d2" : "#e3f2fd",
+                          },
+                        }}
+                      >
+                        {time}
+                      </Button>
+                    </Grid>
+                  ))}
                 </Grid>
               </Grid>
-              <Box mb={2} display={"flex"} gap={3}>
-                <TextField
-                  disabled
-                  label="Patient Name"
-                  placeholder="Name"
-                  fullWidth
-                  value={patientName}
-                  onChange={(event) => {
-                    setPatientName(event.target.value);
-                  }}
-                />
-                <TextField
-                  label="Email"
-                  disabled
-                  placeholder="Email"
-                  fullWidth
-                  value={email}
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                  }}
-                />
-              </Box>
-              <Box mb={2} display={"flex"} gap={3}>
-                <TextField
-                  disabled
-                  label="NRIC No."
-                  placeholder="NRIC No."
-                  fullWidth
-                  value={nric}
-                  onChange={(event) => {
-                    setNric(event.target.value);
-                  }}
-                  onInput={(e) => {
-                    e.target.value = e.target.value
-                      .replace(/\D/g, "") // remove non-digits
-                      .slice(0, 12); // limit to 12 digits
-                  }}
-                />
-                <TextField
-                  disabled
-                  label="Phone Number"
-                  placeholder="Phone Number"
-                  fullWidth
-                  value={phoneNumber}
-                  onChange={(event) => {
-                    setPhoneNumber(event.target.value);
-                  }}
-                  onInput={(e) => {
-                    e.target.value = e.target.value
-                      .replace(/\D/g, "") // remove non-digits
-                      .slice(0, 10); // limit to 10 digits
-                  }}
-                />
-              </Box>
-              <Button
-                color="primary"
-                variant="contained"
+            </Grid>
+            <Box mb={2} display={"flex"} gap={3}>
+              <TextField
+                disabled
+                label="Patient Name"
+                placeholder="Name"
                 fullWidth
-                onClick={handleSubmit}
-              >
-                Book Appointment
-              </Button>
-            </Paper>
-          </Container>
-        </LocalizationProvider>
-      </>
-    );
-  } else {
-    navigate("/signup");
-    toast.error("Please login or signup as a patient first.");
-    return <></>;
-  }
+                value={patientName}
+                onChange={(event) => {
+                  setPatientName(event.target.value);
+                }}
+              />
+              <TextField
+                label="Email"
+                disabled
+                placeholder="Email"
+                fullWidth
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                }}
+              />
+            </Box>
+            <Box mb={2} display={"flex"} gap={3}>
+              <TextField
+                disabled
+                label="NRIC No."
+                placeholder="NRIC No."
+                fullWidth
+                value={nric}
+                onChange={(event) => {
+                  setNric(event.target.value);
+                }}
+                onInput={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "") // remove non-digits
+                    .slice(0, 12); // limit to 12 digits
+                }}
+              />
+              <TextField
+                disabled
+                label="Phone Number"
+                placeholder="Phone Number"
+                fullWidth
+                value={phoneNumber}
+                onChange={(event) => {
+                  setPhoneNumber(event.target.value);
+                }}
+                onInput={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "") // remove non-digits
+                    .slice(0, 10); // limit to 10 digits
+                }}
+              />
+            </Box>
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              onClick={handleSubmit}
+            >
+              Book Appointment
+            </Button>
+          </Paper>
+        </Container>
+      </LocalizationProvider>
+    </>
+  );
 }

@@ -15,14 +15,18 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Header from "../components/Header";
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { getSpecialties } from "../api/api_specialties";
 import { getDoctors } from "../api/api_doctors";
 import { toast } from "sonner";
 import { API_URL } from "../api/constants";
 import { Link } from "react-router";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 // this is where everyone views each doctor
 export default function DoctorFind() {
+  const [cookies] = useCookies("currentuser");
+  const { currentuser = {} } = cookies;
   const [doctors, setDoctors] = useState([]);
   const [specialties, setSpecialties] = useState([]);
   const [specialty, setSpecialty] = useState("all");
@@ -106,13 +110,15 @@ export default function DoctorFind() {
                   >
                     View Profile
                   </Button>
-                  <Button
-                    size="small"
-                    to={`/book-appointment/${doc._id}`}
-                    component={Link}
-                  >
-                    Book an Appointment
-                  </Button>
+                  {currentuser && currentuser.role === "patient" ? (
+                    <Button
+                      size="small"
+                      to={`/book-appointment/${doc._id}`}
+                      component={Link}
+                    >
+                      Book an Appointment
+                    </Button>
+                  ) : null}
                 </CardActions>
               </Card>
             </Grid>

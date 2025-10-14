@@ -14,23 +14,43 @@ export const getSpecialty = async (id) => {
 };
 
 // POST specialty (create)
-export const addSpecialty = async (specialty) => {
-  const response = await axios.post(API_URL + "specialties", {
-    specialty: specialty,
-  });
+export const addSpecialty = async (specialty, token) => {
+  const response = await axios.post(
+    API_URL + "specialties",
+    {
+      specialty: specialty,
+    },
+    {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    }
+  );
   return response.data;
 };
 
 // PUT specialty (update)
-export const updateSpecialty = async (id, specialty) => {
-  const response = await axios.put(API_URL + "specialties/" + id, {
-    specialty: specialty,
-  });
+export const updateSpecialty = async (id, specialty, token) => {
+  const response = await axios.put(
+    API_URL + "specialties/" + id,
+    {
+      specialty: specialty,
+    },
+    {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    }
+  );
   return response.data;
 };
 
 // DELETE specialty (delete)
-export const deleteSpecialty = async (id) => {
-  const response = await axios.delete(API_URL + "specialties/" + id);
+export const deleteSpecialty = async (id, token) => {
+  const response = await axios.delete(API_URL + "specialties/" + id, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
   return response.data;
 };

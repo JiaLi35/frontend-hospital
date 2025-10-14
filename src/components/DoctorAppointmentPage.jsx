@@ -63,7 +63,7 @@ export default function DoctorAppointmentPage() {
       // once user confirm, then we delete the specialty
       if (result.isConfirmed) {
         try {
-          await cancelAppointment(app_id);
+          await cancelAppointment(app_id, token);
           await refreshAppointments();
           toast.success("Successfully cancelled appointment");
         } catch (error) {
@@ -132,32 +132,25 @@ export default function DoctorAppointmentPage() {
                 >
                   View Appointment
                 </Button>
-                <Button
-                  color="success"
-                  variant="contained"
-                  disabled={
-                    appointment.status === "cancelled" ||
-                    appointment.status === "completed"
-                      ? true
-                      : false
-                  }
-                  onClick={() => handleCompleteAppointment(appointment._id)}
-                >
-                  Completed
-                </Button>
-                <Button
-                  color="error"
-                  variant="contained"
-                  disabled={
-                    appointment.status === "cancelled" ||
-                    appointment.status === "completed"
-                      ? true
-                      : false
-                  }
-                  onClick={() => handleCancelAppointment(appointment._id)}
-                >
-                  Cancel
-                </Button>
+                {appointment.status === "cancelled" ||
+                appointment.status === "completed" ? null : (
+                  <>
+                    <Button
+                      color="success"
+                      variant="contained"
+                      onClick={() => handleCompleteAppointment(appointment._id)}
+                    >
+                      Completed
+                    </Button>
+                    <Button
+                      color="error"
+                      variant="contained"
+                      onClick={() => handleCancelAppointment(appointment._id)}
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                )}
               </Box>
             );
           })}

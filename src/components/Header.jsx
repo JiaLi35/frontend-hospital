@@ -14,19 +14,17 @@ export default function Header({ title }) {
   const [patientId, setPatientId] = useState("");
   const [doctorId, setDoctorId] = useState("");
 
-  if (currentuser && currentuser.role === "doctor") {
-    useEffect(() => {
+  useEffect(() => {
+    if (currentuser && currentuser.role === "doctor") {
       getDoctor(currentuser._id).then((doctorData) => {
         setDoctorId(doctorData ? doctorData._id : "");
       });
-    }, []);
-  } else if (currentuser && currentuser.role === "patient") {
-    useEffect(() => {
+    } else if (currentuser && currentuser.role === "patient") {
       getPatient(currentuser._id).then((patientId) => {
         setPatientId(patientId ? patientId._id : "");
       });
-    }, []);
-  }
+    }
+  }, [currentuser]);
 
   return (
     <>
@@ -129,9 +127,9 @@ export default function Header({ title }) {
             sx={{ m: 1 }}
             onClick={() => {
               // remove the cookie
-              removeCookie("currentuser", { path: "/" });
+              removeCookie("currentuser");
               // redirect back to home page
-              navigate("/login");
+              window.location.href = "/login";
             }}
           >
             Logout

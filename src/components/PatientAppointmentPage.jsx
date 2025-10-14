@@ -16,6 +16,7 @@ import {
   cancelAppointment,
 } from "../api/api_appointments";
 import { Link, useParams } from "react-router";
+import { useCookies } from "react-cookie";
 import { toast } from "sonner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -26,6 +27,9 @@ import Swal from "sweetalert2";
 
 export default function PatientAppointmentPage() {
   const { id } = useParams();
+  const [cookies] = useCookies(["currentuser"]);
+  const { currentuser = {} } = cookies;
+  const { token = "" } = currentuser;
   const [status, setStatus] = useState("all");
   const [appointments, setAppointments] = useState([]);
 
@@ -54,7 +58,7 @@ export default function PatientAppointmentPage() {
       // once user confirm, then we delete the specialty
       if (result.isConfirmed) {
         try {
-          await cancelAppointment(app_id);
+          await cancelAppointment(app_id, token);
           const updated = await getAppointmentsByPatientId(id, status);
           setAppointments(updated);
           toast.success("Successfully cancelled appointment");
@@ -127,19 +131,16 @@ export default function PatientAppointmentPage() {
                 >
                   View Appointment
                 </Button>
-                <Button
-                  color="error"
-                  variant="contained"
-                  disabled={
-                    appointment.status === "cancelled" ||
-                    appointment.status === "completed"
-                      ? true
-                      : false
-                  }
-                  onClick={() => handleCancelAppointment(appointment._id)}
-                >
-                  Cancel
-                </Button>
+                {appointment.status === "cancelled" ||
+                appointment.status === "completed" ? null : (
+                  <Button
+                    color="error"
+                    variant="contained"
+                    onClick={() => handleCancelAppointment(appointment._id)}
+                  >
+                    Cancel
+                  </Button>
+                )}
               </Box>
             );
           })}
