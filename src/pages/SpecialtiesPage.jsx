@@ -50,10 +50,15 @@ export default function SpecialtiesPage() {
       .catch((error) => {
         console.log(error);
       });
+
+    if (!currentuser || currentuser.role !== "admin") {
+      navigate("/");
+      toast.error("Access denied.");
+    }
   }, []); // call only once when the page loads
 
   const handleAddNewSpecialty = async (specialty) => {
-    if (!specialty) {
+    if (!specialty.trim()) {
       toast.error("Please fill in the field");
     } else {
       try {
@@ -115,7 +120,7 @@ export default function SpecialtiesPage() {
           toast.success("Specialty has been deleted");
         } catch (error) {
           console.log(error);
-          toast.error(error.response.data.message);
+          toast.error(error?.response?.data?.message);
         }
       }
     });
@@ -149,6 +154,9 @@ export default function SpecialtiesPage() {
               variant="outlined"
               value={specialty}
               onChange={(event) => setSpecialty(event.target.value)}
+              onInput={(e) => {
+                e.target.value = e.target.value.slice(0, 40); // limit to 40 digits
+              }}
             />
             <Button
               color="primary"

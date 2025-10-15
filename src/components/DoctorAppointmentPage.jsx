@@ -16,6 +16,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import BlockIcon from "@mui/icons-material/Block";
 import DoneIcon from "@mui/icons-material/Done";
@@ -52,8 +53,13 @@ export default function DoctorAppointmentPage() {
       })
       .catch((error) => {
         console.log(error);
-        toast.error(error.response.data.message);
+        toast.error(error?.response?.data?.message);
       });
+
+    if (!currentuser || currentuser.role !== "doctor") {
+      navigate("/");
+      toast.error("Access denied");
+    }
   }, [status]);
 
   const localDateTime = (date) => {
@@ -83,7 +89,7 @@ export default function DoctorAppointmentPage() {
           toast.success("Successfully cancelled appointment");
         } catch (error) {
           console.log(error);
-          toast.error(error.response.data.message);
+          toast.error(error?.response?.data?.message);
         }
       }
     });
@@ -96,7 +102,7 @@ export default function DoctorAppointmentPage() {
       await refreshAppointments();
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message);
     }
   };
 

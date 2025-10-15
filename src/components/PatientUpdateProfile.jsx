@@ -1,11 +1,4 @@
-import {
-  Container,
-  Typography,
-  Box,
-  Paper,
-  TextField,
-  Button,
-} from "@mui/material";
+import { Container, Box, Paper, TextField, Button } from "@mui/material";
 import Header from "./Header";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -39,10 +32,15 @@ export default function PatientUpdateProfile() {
       .catch((error) => {
         console.log(error);
       });
+
+    if (!currentuser || currentuser.role !== "patient") {
+      navigate("/");
+      toast.error("Access denied");
+    }
   }, []);
 
   const handleUpdatePatient = async () => {
-    if (!name || !phoneNumber) {
+    if (!phoneNumber) {
       toast.error("Please fill in all the fields.");
     } else {
       try {
@@ -53,10 +51,12 @@ export default function PatientUpdateProfile() {
         );
         console.log(updatedPatient);
         toast.success("Patient Profile successfully updated.");
-        navigate(`/profile/${id}`);
+        setTimeout(() => {
+          window.location.reload();
+        }, 600);
       } catch (error) {
         console.log(error);
-        toast.error(error.response.data.message);
+        toast.error(error?.response?.data?.message);
       }
     }
   };
@@ -84,6 +84,7 @@ export default function PatientUpdateProfile() {
           <Paper sx={{ padding: 3, width: "100%", maxWidth: "500px" }}>
             <Box mb={2}>
               <TextField
+                disabled
                 label="Name"
                 placeholder="Name"
                 fullWidth

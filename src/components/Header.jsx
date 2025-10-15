@@ -141,21 +141,19 @@ export default function Header() {
                 </Box>
               )}
               {currentuser && currentuser.role !== "admin" && (
-                <>
-                  <Button
-                    variant={"text"}
-                    color="dark"
-                    to={
-                      currentuser && currentuser.role === "patient"
-                        ? `/manage-appointments/${patientId}`
-                        : `/manage-appointments/${doctorId}`
-                    }
-                    component={Link}
-                    sx={{ m: 1 }}
-                  >
-                    Manage Appointments
-                  </Button>
-                </>
+                <Button
+                  variant={"text"}
+                  color="dark"
+                  to={
+                    currentuser && currentuser.role === "patient"
+                      ? `/manage-appointments/${patientId}`
+                      : `/manage-appointments/${doctorId}`
+                  }
+                  component={Link}
+                  sx={{ m: 1 }}
+                >
+                  Manage Appointments
+                </Button>
               )}
             </Menu>
           </Box>

@@ -52,8 +52,13 @@ export default function PatientAppointmentPage() {
       })
       .catch((error) => {
         console.log(error);
-        toast.error(error.response.data.message);
+        toast.error(error?.response?.data?.message);
       });
+
+    if (!currentuser || currentuser.role !== "patient") {
+      navigate("/");
+      toast.error("Access denied");
+    }
   }, [status]);
 
   const handleCancelAppointment = async (app_id) => {
@@ -75,7 +80,7 @@ export default function PatientAppointmentPage() {
           toast.success("Successfully cancelled appointment");
         } catch (error) {
           console.log(error);
-          toast.error(error.response.data.message);
+          toast.error(error?.response?.data?.message);
         }
       }
     });

@@ -38,7 +38,7 @@ export default function LoginPage() {
         navigate("/");
       } catch (error) {
         console.log(error);
-        toast.error(error.response.data.message);
+        toast.error(error?.response?.data?.message);
       }
     }
   };
@@ -81,6 +81,11 @@ export default function LoginPage() {
                 onChange={(event) => {
                   setEmail(event.target.value);
                 }}
+                onInput={(e) => {
+                  e.target.value = e.target.value
+                    .replace(" ", "") // remove spaces
+                    .slice(0, 64); // limit to 64 digits
+                }}
               />
             </Box>
             <Box mb={2}>
@@ -92,6 +97,11 @@ export default function LoginPage() {
                 value={password}
                 onChange={(event) => {
                   setPassword(event.target.value);
+                }}
+                onInput={(e) => {
+                  e.target.value = e.target.value
+                    .replace(" ", "") // remove spaces
+                    .slice(0, 18); // limit to 18 digits
                 }}
               />
             </Box>

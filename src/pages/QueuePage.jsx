@@ -35,8 +35,14 @@ export default function QueuePage() {
   const [patientNumber, setPatientNumber] = useState("");
 
   useEffect(() => {
+    if (!currentuser || currentuser.role !== "patient") {
+      navigate("/");
+      toast.error("Access denied");
+    }
+
     getAppointment(id)
       .then((appointmentData) => {
+        // set appointment data
         console.log(appointmentData);
         setAppointmentId(appointmentData ? appointmentData._id : "");
         // if a completed / cancelled appointment, redirect out.
@@ -84,14 +90,15 @@ export default function QueuePage() {
           })
           .catch((error) => {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error?.response?.data?.message);
           });
       })
       .catch((error) => {
         console.log(error);
-        toast.error(error.response.data.message);
+        toast.error(error?.response?.data?.message);
       });
 
+    // set the Patient's queue number
     getPatientQueueNumber(id)
       .then((data) => {
         console.log(data);
@@ -99,21 +106,21 @@ export default function QueuePage() {
       })
       .catch((error) => {
         console.log(error);
-        toast.error(error.response.data.message);
+        toast.error(error?.response?.data?.message);
       });
   }, [patientNumber, currentNumber]);
 
   const handleCheckIn = async () => {
     try {
       await newQueueNumber(doctorId, patientId, appointmentId, token);
-      const updatedQueueNumber = await getCurrentQueueNumber(appointmentId);
+      const updatedQueueNumber = await getCurrentQueueNumber(doctorId);
       setCurrentNumber(updatedQueueNumber.number);
-      const updatedPatientNumber = await getPatientQueueNumber(patientId);
+      const updatedPatientNumber = await getPatientQueueNumber(appointmentId);
       setPatientNumber(updatedPatientNumber.number);
       toast.success("Successfully checked in!");
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message);
     }
   };
 

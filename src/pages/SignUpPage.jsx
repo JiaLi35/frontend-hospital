@@ -46,6 +46,8 @@ export default function SignUpPage() {
     } else if (phoneNumber.length !== 10) {
       // if phone number is not a certain length, throw an error to input a valid value
       toast.error("Please enter a valid phone number.");
+    } else if (!name.trim()) {
+      toast.error("Please key in a valid name");
     } else {
       try {
         const userData = await addPatientProfileAndSignUp(
@@ -62,7 +64,7 @@ export default function SignUpPage() {
         navigate("/");
       } catch (error) {
         console.log(error);
-        toast.error(error.response.data.message);
+        toast.error(error?.response?.data?.message);
       }
     }
   };
@@ -104,6 +106,9 @@ export default function SignUpPage() {
                 onChange={(event) => {
                   setName(event.target.value);
                 }}
+                onInput={(e) => {
+                  e.target.value = e.target.value.slice(0, 50); // limit to 50 digits
+                }}
               />
             </Box>
             <Box mb={2}>
@@ -114,6 +119,11 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(event) => {
                   setEmail(event.target.value);
+                }}
+                onInput={(e) => {
+                  e.target.value = e.target.value
+                    .replace(" ", "") // remove non-digits
+                    .slice(0, 64); // limit to 64 digits
                 }}
               />
             </Box>
@@ -147,7 +157,7 @@ export default function SignUpPage() {
                 onInput={(e) => {
                   e.target.value = e.target.value
                     .replace(/\D/g, "") // remove non-digits
-                    .slice(0, 10); // limit to 12 digits
+                    .slice(0, 10); // limit to 10 digits
                 }}
               />
             </Box>
@@ -161,6 +171,11 @@ export default function SignUpPage() {
                 onChange={(event) => {
                   setPassword(event.target.value);
                 }}
+                onInput={(e) => {
+                  e.target.value = e.target.value
+                    .replace(" ", "") // remove non-digits
+                    .slice(0, 18); // limit to 18 digits
+                }}
               />
             </Box>
             <Box mb={2}>
@@ -172,6 +187,11 @@ export default function SignUpPage() {
                 value={confirmPassword}
                 onChange={(event) => {
                   setConfirmPassword(event.target.value);
+                }}
+                onInput={(e) => {
+                  e.target.value = e.target.value
+                    .replace(" ", "") // remove non-digits
+                    .slice(0, 18); // limit to 18 digits
                 }}
               />
             </Box>

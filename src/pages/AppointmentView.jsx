@@ -70,6 +70,14 @@ export default function AppointmentView() {
   useEffect(() => {
     getAppointment(id)
       .then((appointmentData) => {
+        if (
+          !currentuser ||
+          currentuser.role !== "patient" ||
+          currentuser.role !== "doctor"
+        ) {
+          navigate("/");
+          toast.error("Access denied");
+        }
         setDoctorName(appointmentData ? appointmentData.doctorId.name : "");
         setSpecialty(
           appointmentData ? appointmentData.doctorId.specialty._id : ""
@@ -129,6 +137,17 @@ export default function AppointmentView() {
       `${date.format("YYYY-MM-DD")} ${selectedTime}`,
       "YYYY-MM-DD hh:mm A"
     );
+
+    const now = dayjs();
+
+    // ✅ Validation: prevent booking in the past
+    if (combinedDateTime.isBefore(now)) {
+      toast.error(
+        "You cannot select a past date or time. Please choose another time slot."
+      );
+      return;
+    }
+
     // Convert to ISO string
     const dateTime = combinedDateTime.toISOString();
 
@@ -145,7 +164,7 @@ export default function AppointmentView() {
       navigate(`/manage-appointments/${userId}`);
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message);
     }
   };
 
@@ -205,8 +224,7 @@ export default function AppointmentView() {
                       : false
                   }
                   disablePast
-                  disableHighlightToday
-                  minDate={today.add(1, "day")}
+                  minDate={today}
                   maxDate={today.add(1, "year")}
                   value={date}
                   onChange={(newValue) => {
@@ -217,45 +235,88 @@ export default function AppointmentView() {
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
                 <Typography mb={2}>Select a time: </Typography>
-                <Grid container spacing={2}>
-                  {timeSlots.map((time) => (
-                    <Grid
-                      item
-                      size={{ xs: 12, sm: 6, md: 4, lg: 4 }}
-                      key={time}
-                      gap={3}
-                    >
-                      <Button
-                        disabled={
-                          status === "cancelled" || status === "completed"
-                            ? true
-                            : false
-                        }
-                        fullWidth
-                        variant={
-                          selectedTime === time ? "contained" : "outlined"
-                        }
-                        onClick={() => {
-                          setSelectedTime(time);
-                        }}
+                {(() => {
+                  const availableTimeSlots = timeSlots.filter((time) => {
+                    // Only filter if the selected date is today
+                    if (date && date.isSame(today, "day")) {
+                      const now = dayjs();
+                      const slotTime = dayjs(time, "hh:mm A");
+
+                      // Compare by converting slotTime to today’s date + that time
+                      const slotDateTime = today
+                        .hour(slotTime.hour())
+                        .minute(slotTime.minute());
+
+                      return slotDateTime.isAfter(now);
+                    }
+
+                    // For future dates, show all slots
+                    return true;
+                  });
+
+                  // ✅ If no available slots, show message box
+                  if (availableTimeSlots.length === 0) {
+                    return (
+                      <Box
                         sx={{
-                          textTransform: "none",
-                          fontWeight: "bold",
-                          borderColor: "#2196f3",
-                          color: selectedTime === time ? "#fff" : "#2196f3",
-                          backgroundColor:
-                            selectedTime === time ? "#2196f3" : "transparent",
-                          "&:hover": {
-                            backgroundColor:
-                              selectedTime === time ? "#1976d2" : "#e3f2fd",
-                          },
+                          p: 2,
+                          border: "1px dashed #ccc",
+                          borderRadius: 2,
+                          backgroundColor: "#fafafa",
+                          textAlign: "center",
                         }}
                       >
-                        {time}
-                      </Button>
+                        <Typography color="text.secondary">
+                          No timeslots available for today. Please book another
+                          day.
+                        </Typography>
+                      </Box>
+                    );
+                  }
+                  return (
+                    <Grid container spacing={2}>
+                      {availableTimeSlots.map((time) => (
+                        <Grid
+                          item
+                          size={{ xs: 12, sm: 6, md: 4, lg: 4 }}
+                          key={time}
+                          gap={3}
+                        >
+                          <Button
+                            disabled={
+                              status === "cancelled" || status === "completed"
+                                ? true
+                                : false
+                            }
+                            fullWidth
+                            variant={
+                              selectedTime === time ? "contained" : "outlined"
+                            }
+                            onClick={() => {
+                              setSelectedTime(time);
+                            }}
+                            sx={{
+                              textTransform: "none",
+                              fontWeight: "bold",
+                              borderColor: "#2196f3",
+                              color: selectedTime === time ? "#fff" : "#2196f3",
+                              backgroundColor:
+                                selectedTime === time
+                                  ? "#2196f3"
+                                  : "transparent",
+                              "&:hover": {
+                                backgroundColor:
+                                  selectedTime === time ? "#1976d2" : "#e3f2fd",
+                              },
+                            }}
+                          >
+                            {time}
+                          </Button>
+                        </Grid>
+                      ))}
                     </Grid>
-                  ))}
-                </Grid>
+                  );
+                })()}
               </Grid>
             </Grid>
             <Box mb={2} display={"flex"} gap={3}>

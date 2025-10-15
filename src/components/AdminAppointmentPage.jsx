@@ -43,8 +43,13 @@ export default function AdminAppointmentPage() {
       })
       .catch((error) => {
         console.log(error);
-        toast.error(error.response.data.message);
+        toast.error(error?.response?.data?.message);
       });
+
+    if (!currentuser || currentuser.role !== "admin") {
+      navigate("/");
+      toast.error("Access denied");
+    }
   }, [status]);
 
   const localDateTime = (date) => {
@@ -73,7 +78,7 @@ export default function AdminAppointmentPage() {
           toast.success("Successfully deleted appointment.");
         } catch (error) {
           console.log(error);
-          toast.error(error.response.data.message);
+          toast.error(error?.response?.data?.message);
         }
       }
     });

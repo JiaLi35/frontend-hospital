@@ -1,7 +1,6 @@
 import Header from "./Header";
 import {
   Container,
-  Typography,
   Box,
   Paper,
   TextField,
@@ -63,6 +62,11 @@ export default function DoctorUpdateProfile() {
       .catch((error) => {
         console.log(error);
       });
+
+    if (!currentuser || currentuser.role !== "doctor") {
+      navigate("/");
+      toast.error("Access denied");
+    }
   }, []);
 
   useEffect(() => {
@@ -83,16 +87,16 @@ export default function DoctorUpdateProfile() {
       try {
         const updatedDoctor = await updateDoctor(
           doctorId,
-          biography,
+          biography.trim(),
           image,
           token
         );
         console.log(updatedDoctor);
         toast.success("Doctor Profile successfully updated.");
-        navigate(`/profile/${id}`);
+        navigate(`/doctor/${id}`);
       } catch (error) {
         console.log(error);
-        toast.error(error.response.data.message);
+        toast.error(error?.response?.data?.message);
       }
     }
   };
@@ -120,6 +124,7 @@ export default function DoctorUpdateProfile() {
           <Paper sx={{ padding: 3, width: "100%", maxWidth: "500px" }}>
             <Box mb={2}>
               <TextField
+                disabled
                 label="Name"
                 placeholder="Name"
                 fullWidth
@@ -170,6 +175,9 @@ export default function DoctorUpdateProfile() {
                 onChange={(event) => {
                   setBiography(event.target.value);
                 }}
+                onInput={(e) => {
+                  e.target.value = e.target.value.slice(0, 500); // limit to 40 digits
+                }}
               />
             </Box>
             <Box
@@ -216,8 +224,19 @@ export default function DoctorUpdateProfile() {
               variant="contained"
               fullWidth
               onClick={handleUpdateDoctor}
+              sx={{ mb: "10px" }}
             >
               Update Profile
+            </Button>
+            <Button
+              color="error"
+              variant="contained"
+              fullWidth
+              onClick={() => {
+                navigate("/");
+              }}
+            >
+              Cancel
             </Button>
           </Paper>
         </Container>
