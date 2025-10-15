@@ -111,9 +111,6 @@ export default function QueuePage() {
       const updatedPatientNumber = await getPatientQueueNumber(patientId);
       setPatientNumber(updatedPatientNumber.number);
       toast.success("Successfully checked in!");
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);

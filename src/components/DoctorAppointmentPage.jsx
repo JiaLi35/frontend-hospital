@@ -174,7 +174,8 @@ export default function DoctorAppointmentPage() {
                         <Box display={"flex"} gap={1}>
                           <Tooltip
                             title={
-                              appointment.status !== "scheduled"
+                              appointment.status === "cancelled" ||
+                              appointment.status === "completed"
                                 ? "View Appointment"
                                 : "Reschedule Appointment"
                             }
@@ -185,7 +186,8 @@ export default function DoctorAppointmentPage() {
                               to={`/appointment/${appointment._id}`}
                               component={Link}
                             >
-                              {appointment.status !== "scheduled" ? (
+                              {appointment.status === "cancelled" ||
+                              appointment.status === "completed" ? (
                                 <VisibilityIcon />
                               ) : (
                                 <CalendarMonthIcon />
@@ -277,7 +279,8 @@ export default function DoctorAppointmentPage() {
                   <Box display="flex" justifyContent="flex-end" gap={1} mt={1}>
                     <Tooltip
                       title={
-                        appointment.status !== "scheduled"
+                        appointment.status === "cancelled" ||
+                        appointment.status === "completed"
                           ? "View Appointment"
                           : "Reschedule Appointment"
                       }
@@ -289,7 +292,8 @@ export default function DoctorAppointmentPage() {
                         color="primary"
                         variant="contained"
                       >
-                        {appointment.status !== "scheduled" ? (
+                        {appointment.status === "cancelled" ||
+                        appointment.status === "completed" ? (
                           <VisibilityIcon fontSize="small" />
                         ) : (
                           <CalendarMonthIcon fontSize="small" />

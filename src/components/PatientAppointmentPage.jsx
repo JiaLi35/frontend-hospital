@@ -179,7 +179,8 @@ export default function PatientAppointmentPage() {
                           )}
                         <Tooltip
                           title={
-                            appointment.status !== "scheduled"
+                            appointment.status === "cancelled" ||
+                            appointment.status === "completed"
                               ? "View Appointment Details"
                               : "Reschedule Appointment"
                           }
@@ -190,7 +191,8 @@ export default function PatientAppointmentPage() {
                             to={`/appointment/${appointment._id}`}
                             component={Link}
                           >
-                            {appointment.status !== "scheduled" ? (
+                            {appointment.status === "cancelled" ||
+                            appointment.status === "completed" ? (
                               <VisibilityIcon />
                             ) : (
                               <CalendarMonthIcon />
@@ -277,7 +279,8 @@ export default function PatientAppointmentPage() {
                       )}
                     <Tooltip
                       title={
-                        appointment.status !== "scheduled"
+                        appointment.status === "cancelled" ||
+                        appointment.status === "completed"
                           ? "View Appointment Details"
                           : "Reschedule Appointment"
                       }
@@ -289,7 +292,8 @@ export default function PatientAppointmentPage() {
                         color="primary"
                         variant="contained"
                       >
-                        {appointment.status !== "scheduled" ? (
+                        {appointment.status === "cancelled" ||
+                        appointment.status === "completed" ? (
                           <VisibilityIcon fontSize="small" />
                         ) : (
                           <CalendarMonthIcon fontSize="small" />
