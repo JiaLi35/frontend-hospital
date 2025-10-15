@@ -211,14 +211,6 @@ export default function HospitalHome() {
           ))}
         </Grid>
       </Container>
-
-      <Box sx={{ bgcolor: "primary.main", color: "white", py: 3, mt: 6 }}>
-        <Container maxWidth="md" sx={{ textAlign: "center" }}>
-          <Typography variant="body1">
-            © 2025 City Hospital. All rights reserved.
-          </Typography>
-        </Container>
-      </Box>
     </>
   );
 }
