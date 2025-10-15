@@ -90,180 +90,198 @@ export default function DoctorFind() {
 
   return (
     <>
-      <Header />
-      <Box sx={{ width: "99vw", overflow: "hidden" }}>
-        <Box
-          component="img"
-          src="/Find a Doctor.png"
-          sx={{
-            height: "300px",
-            width: "100%",
-            objectFit: "cover", // fills box without stretching
-            objectPosition: "center", // keeps the focal point centered
-            display: "block", // removes extra spacing
-          }}
-        />
-      </Box>
-      <Container sx={{ py: 4 }}>
-        <Grid container spacing={3}>
-          {/* Filter Section */}
-          <Grid size={{ xs: 12, md: 2 }}>
-            <Box sx={{ py: 2 }}>
-              <FormControl fullWidth>
-                <InputLabel id="specialty-select-label">Specialty</InputLabel>
-                <Select
-                  labelId="specialty-select-label"
-                  id="specialty-select"
-                  value={specialty}
-                  label="Specialty"
-                  onChange={(e) => setSpecialty(e.target.value)}
-                >
-                  <MenuItem value="all">All Specialties</MenuItem>
-                  {specialties.map((spe) => (
-                    <MenuItem key={spe._id} value={spe._id}>
-                      {spe.specialty}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          </Grid>
-
-          {/* Doctors Section */}
-          <Grid size={{ xs: 12, md: 10 }}>
-            <Grid container spacing={3}>
-              {doctors.length === 0 ? (
+      <Box sx={{ backgroundColor: "rgb(251, 251, 251)" }}>
+        <Header />
+        <Box sx={{ width: "99vw", overflow: "hidden" }}>
+          <Box
+            component="img"
+            src="/Find a Doctor.png"
+            sx={{
+              height: "300px",
+              width: "100%",
+              objectFit: "cover", // fills box without stretching
+              objectPosition: "center", // keeps the focal point centered
+              display: "block", // removes extra spacing
+            }}
+          />
+        </Box>
+        <Container maxWidth="xl">
+          <Grid container spacing={3} sx={{ py: 4 }}>
+            {/* Filter Section */}
+            <Grid size={{ xs: 12, md: 2 }}>
+              <Box sx={{ py: 2 }}>
                 <Typography
                   variant="h5"
-                  sx={{ py: 4, textAlign: "center", width: "100%" }}
+                  textAlign={"left"}
+                  mb={2}
+                  fontWeight={"bold"}
                 >
-                  No doctors found.
+                  Search
                 </Typography>
-              ) : (
-                doctors.map((doc) => (
-                  <Grid key={doc._id} size={{ xs: 12, sm: 12, lg: 6 }}>
-                    <Card
-                      sx={{
-                        display: "flex",
-                        flexDirection: { xs: "column", sm: "row" },
-                        alignItems: "center",
-                        p: 2,
-                        borderRadius: 3,
-                        gap: 2,
-                      }}
-                    >
-                      {/* Doctor Image */}
-                      <CardMedia
-                        component="img"
-                        image={
-                          API_URL +
-                          (doc.image ? doc.image : "uploads/default_image.png")
-                        }
+                <FormControl fullWidth>
+                  <InputLabel id="specialty-select-label">Specialty</InputLabel>
+                  <Select
+                    labelId="specialty-select-label"
+                    id="specialty-select"
+                    value={specialty}
+                    label="Specialty"
+                    onChange={(e) => setSpecialty(e.target.value)}
+                  >
+                    <MenuItem value="all">All Specialties</MenuItem>
+                    {specialties.map((spe) => (
+                      <MenuItem key={spe._id} value={spe._id}>
+                        {spe.specialty}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            </Grid>
+
+            {/* Doctors Section */}
+            <Grid size={{ xs: 12, md: 10 }}>
+              <Grid container spacing={3}>
+                {doctors.length === 0 ? (
+                  <Typography
+                    variant="h5"
+                    sx={{ py: 4, textAlign: "center", width: "100%" }}
+                  >
+                    No doctors found.
+                  </Typography>
+                ) : (
+                  doctors.map((doc) => (
+                    <Grid key={doc._id} size={{ xs: 12, sm: 12, lg: 6 }}>
+                      <Card
                         sx={{
-                          width: 140,
-                          height: 140,
-                          borderRadius: 2,
-                          objectFit: "cover",
+                          minHeight: "186px",
+                          minWidth: "220px",
+                          display: "flex",
+                          flexDirection: { xs: "column", sm: "row" },
+                          alignItems: "center",
+                          p: 1,
+                          borderRadius: 3,
+                          gap: 2,
                         }}
-                      />
-
-                      {/* Doctor Info */}
-                      <CardContent sx={{ flex: 1, textAlign: "left", p: 0 }}>
-                        <Typography
-                          gutterBottom
-                          variant="h6"
-                          sx={{ fontWeight: "bold" }}
-                        >
-                          {doc.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
+                      >
+                        {/* Doctor Image */}
+                        <CardMedia
+                          component="img"
+                          image={
+                            API_URL +
+                            (doc.image
+                              ? doc.image
+                              : "uploads/default_image.png")
+                          }
                           sx={{
-                            mb: 2,
-                            overflow: "hidden",
-                            display: "-webkit-box",
-                            WebkitBoxOrient: "vertical",
-                            WebkitLineClamp: 3,
+                            width: 150,
+                            height: 150,
+                            borderRadius: 2,
+                            objectFit: "cover",
                           }}
-                        >
-                          {doc.biography || "No Biography"}
-                        </Typography>
+                        />
 
-                        {/* Buttons */}
-                        <Stack
-                          direction="row"
-                          spacing={2}
-                          alignItems="center"
-                          justifyContent="flex-start"
-                        >
-                          {/* View Profile */}
-                          <Button
-                            variant="contained"
-                            size="small"
-                            to={`/doctor/${doc._id}`}
-                            component={Link}
-                            className={`expand-button ${
-                              expanded === `profile-${doc._id}`
-                                ? "expanded"
-                                : ""
-                            }`}
-                            onMouseEnter={() =>
-                              setExpanded(`profile-${doc._id}`)
-                            }
-                            onMouseLeave={() => setExpanded(null)}
+                        {/* Doctor Info */}
+                        <CardContent sx={{ flex: 1, textAlign: "left", p: 0 }}>
+                          <Typography
+                            gutterBottom
+                            variant="h6"
+                            sx={{
+                              fontWeight: "bold",
+                              whiteSpace: "normal", // allow wrapping
+                              overflowWrap: "break-word", // break long words if necessary
+                              wordBreak: "break-word", // additional safety for long strings
+                            }}
                           >
-                            <PersonIcon className="button-icon" />
-                            <span className="button-text">View Profile</span>
-                          </Button>
+                            {doc.name}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{
+                              mb: 2,
+                              whiteSpace: "normal", // allow wrapping
+                              overflowWrap: "break-word", // break long words if necessary
+                              wordBreak: "break-word", // additional safety for long strings
+                            }}
+                          >
+                            {doc.specialty.specialty || "No Biography"}
+                          </Typography>
 
-                          {/* Book Appointment (patients only) */}
-                          {currentuser?.role === "patient" && (
+                          {/* Buttons */}
+                          <Stack
+                            direction="row"
+                            spacing={2}
+                            alignItems="center"
+                            justifyContent="flex-start"
+                          >
+                            {/* View Profile */}
                             <Button
                               variant="contained"
                               size="small"
-                              color="secondary"
-                              to={`/book-appointment/${doc._id}`}
+                              to={`/doctor/${doc._id}`}
                               component={Link}
                               className={`expand-button ${
-                                expanded === `appointment-${doc._id}`
+                                expanded === `profile-${doc._id}`
                                   ? "expanded"
                                   : ""
                               }`}
                               onMouseEnter={() =>
-                                setExpanded(`appointment-${doc._id}`)
+                                setExpanded(`profile-${doc._id}`)
                               }
                               onMouseLeave={() => setExpanded(null)}
                             >
-                              <CalendarMonthIcon className="button-icon" />
-                              <span className="button-text">
-                                Book Appointment
-                              </span>
+                              <PersonIcon className="button-icon" />
+                              <span className="button-text">View Profile</span>
                             </Button>
-                          )}
 
-                          {/* Delete (admins only) */}
-                          {currentuser?.role === "admin" && (
-                            <Tooltip title="Delete doctor">
-                              <IconButton
+                            {/* Book Appointment (patients only) */}
+                            {currentuser?.role === "patient" && (
+                              <Button
+                                variant="contained"
                                 size="small"
-                                color="error"
-                                onClick={() => handleDoctorDelete(doc._id)}
+                                color="secondary"
+                                to={`/book-appointment/${doc._id}`}
+                                component={Link}
+                                className={`expand-button ${
+                                  expanded === `appointment-${doc._id}`
+                                    ? "expanded"
+                                    : ""
+                                }`}
+                                onMouseEnter={() =>
+                                  setExpanded(`appointment-${doc._id}`)
+                                }
+                                onMouseLeave={() => setExpanded(null)}
                               >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        </Stack>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))
-              )}
+                                <CalendarMonthIcon className="button-icon" />
+                                <span className="button-text">
+                                  Book Appointment
+                                </span>
+                              </Button>
+                            )}
+
+                            {/* Delete (admins only) */}
+                            {currentuser?.role === "admin" && (
+                              <Tooltip title="Delete doctor">
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  onClick={() => handleDoctorDelete(doc._id)}
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))
+                )}
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      </Box>
     </>
   );
 }

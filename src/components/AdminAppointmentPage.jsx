@@ -132,11 +132,27 @@ export default function AdminAppointmentPage() {
                   return (
                     <TableRow key={appointment._id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>
-                        <Typography>{appointment.patientId.name}</Typography>
+                      <TableCell sx={{ maxWidth: "200px" }}>
+                        <Typography
+                          sx={{
+                            whiteSpace: "normal", // allow wrapping
+                            overflowWrap: "break-word", // break long words if necessary
+                            wordBreak: "break-word", // additional safety for long strings
+                          }}
+                        >
+                          {appointment.patientId.name}
+                        </Typography>
                       </TableCell>
-                      <TableCell>
-                        <Typography>{appointment.patientId.email}</Typography>
+                      <TableCell sx={{ maxWidth: "200px" }}>
+                        <Typography
+                          sx={{
+                            whiteSpace: "normal", // allow wrapping
+                            overflowWrap: "break-word", // break long words if necessary
+                            wordBreak: "break-word", // additional safety for long strings
+                          }}
+                        >
+                          {appointment.patientId.email}
+                        </Typography>
                       </TableCell>
                       <TableCell>
                         <Typography>{localDateAndTime}</Typography>

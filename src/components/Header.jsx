@@ -4,12 +4,22 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import SearchIcon from "@mui/icons-material/Search";
+import HomeIcon from "@mui/icons-material/Home";
+import TurnedInIcon from "@mui/icons-material/TurnedIn";
 import { Link } from "react-router";
 import { useCookies } from "react-cookie";
 import { getDoctor } from "../api/api_doctors";
@@ -25,18 +35,11 @@ export default function Header() {
   const [image, setImage] = useState(null);
 
   // app bar
-  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
@@ -67,95 +70,91 @@ export default function Header() {
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
             }}
           >
-            Hospital
+            DocOnline
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
+              aria-label="open navigation"
+              onClick={() => setMobileOpen(true)}
               color="inherit"
             >
               <MenuIcon />
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{ display: { xs: "block", md: "none" } }}
+
+            <Drawer
+              anchor="left"
+              open={mobileOpen}
+              onClose={() => setMobileOpen(false)}
             >
-              {/* RESPONSIVE DROPDOWN MENU (TO BE REPLACED WITH DRAWER) */}
-              <MenuItem
-                variant={"outlined"}
-                color="primary"
-                to="/"
-                component={Link}
-                sx={{ m: 1 }}
+              <Box
+                sx={{ width: 260 }}
+                role="presentation"
+                onClick={() => setMobileOpen(false)}
+                onKeyDown={() => setMobileOpen(false)}
               >
-                Home
-              </MenuItem>
-              <MenuItem
-                variant={"outlined"}
-                color="primary"
-                to="/doctors"
-                component={Link}
-                sx={{ m: 1 }}
-              >
-                Find a Doctor
-              </MenuItem>
-              {currentuser && currentuser.role === "admin" && (
-                <Box>
-                  <MenuItem to="/add-doctor" component={Link} sx={{ m: 1 }}>
-                    Add a Doctor
-                  </MenuItem>
-                  <MenuItem to="/specialties" component={Link} sx={{ m: 1 }}>
-                    Manage Specialties
-                  </MenuItem>
-                  <MenuItem
-                    to={`/manage-appointments/${currentuser._id}`}
-                    component={Link}
-                    sx={{ m: 1 }}
-                  >
-                    Manage Appointments
-                  </MenuItem>
-                </Box>
-              )}
-              {currentuser && currentuser.role !== "admin" && (
-                <Button
-                  variant={"text"}
-                  color="dark"
-                  to={
-                    currentuser && currentuser.role === "patient"
-                      ? `/manage-appointments/${patientId}`
-                      : `/manage-appointments/${doctorId}`
-                  }
-                  component={Link}
-                  sx={{ m: 1 }}
-                >
-                  Manage Appointments
-                </Button>
-              )}
-            </Menu>
+                <List>
+                  <ListItem disablePadding>
+                    <ListItemButton component={Link} to="/">
+                      <HomeIcon sx={{ marginRight: "10px" }} />
+                      <ListItemText primary="Home" />
+                    </ListItemButton>
+                  </ListItem>
+                  <ListItem disablePadding>
+                    <ListItemButton component={Link} to="/doctors">
+                      <SearchIcon sx={{ marginRight: "10px" }} />
+                      <ListItemText primary="Find a Doctor" />
+                    </ListItemButton>
+                  </ListItem>
+                  {currentuser && currentuser.role === "admin" && (
+                    <>
+                      <ListItem disablePadding>
+                        <ListItemButton component={Link} to="/add-doctor">
+                          <PersonAddIcon sx={{ marginRight: "10px" }} />
+                          <ListItemText primary="Add a Doctor" />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem disablePadding>
+                        <ListItemButton component={Link} to="/specialties">
+                          <TurnedInIcon sx={{ marginRight: "10px" }} />
+                          <ListItemText primary="Manage Specialties" />
+                        </ListItemButton>
+                      </ListItem>
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          component={Link}
+                          to={`/manage-appointments/${currentuser._id}`}
+                        >
+                          <CalendarMonthIcon sx={{ marginRight: "10px" }} />
+                          <ListItemText primary="Manage Appointments" />
+                        </ListItemButton>
+                      </ListItem>
+                    </>
+                  )}
+                  {currentuser && currentuser.role !== "admin" && (
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={Link}
+                        to={
+                          currentuser && currentuser.role === "patient"
+                            ? `/manage-appointments/${patientId}`
+                            : `/manage-appointments/${doctorId}`
+                        }
+                      >
+                        <CalendarMonthIcon sx={{ marginRight: "10px" }} />
+                        <ListItemText primary="Manage Appointments" />
+                      </ListItemButton>
+                    </ListItem>
+                  )}
+                </List>
+              </Box>
+            </Drawer>
           </Box>
           <Typography
             variant="h5"
@@ -165,14 +164,12 @@ export default function Header() {
               mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
             }}
           >
-            Hospital
+            DocOnline
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {/* MAIN HOME PAGE BUTTONS */}
@@ -183,6 +180,7 @@ export default function Header() {
               component={Link}
               sx={{ m: 1 }}
             >
+              <HomeIcon sx={{ marginRight: "10px" }} />
               Home
             </Button>
             <Button
@@ -192,6 +190,7 @@ export default function Header() {
               component={Link}
               sx={{ m: 1 }}
             >
+              <SearchIcon sx={{ marginRight: "10px" }} />
               Find a Doctor
             </Button>
             {currentuser && currentuser.role === "admin" && (
@@ -203,6 +202,7 @@ export default function Header() {
                   component={Link}
                   sx={{ m: 1 }}
                 >
+                  <PersonAddIcon sx={{ marginRight: "10px" }} />
                   Add a Doctor
                 </Button>
                 <Button
@@ -212,6 +212,7 @@ export default function Header() {
                   component={Link}
                   sx={{ m: 1 }}
                 >
+                  <TurnedInIcon sx={{ marginRight: "10px" }} />
                   Manage Specialties
                 </Button>
                 <Button
@@ -221,26 +222,26 @@ export default function Header() {
                   component={Link}
                   sx={{ m: 1 }}
                 >
+                  <CalendarMonthIcon sx={{ marginRight: "10px" }} />
                   Manage Appointments
                 </Button>
               </>
             )}
             {currentuser && currentuser.role !== "admin" && (
-              <>
-                <Button
-                  variant={"text"}
-                  color="dark"
-                  to={
-                    currentuser && currentuser.role === "patient"
-                      ? `/manage-appointments/${patientId}`
-                      : `/manage-appointments/${doctorId}`
-                  }
-                  component={Link}
-                  sx={{ m: 1 }}
-                >
-                  Manage Appointments
-                </Button>
-              </>
+              <Button
+                variant={"text"}
+                color="dark"
+                to={
+                  currentuser && currentuser.role === "patient"
+                    ? `/manage-appointments/${patientId}`
+                    : `/manage-appointments/${doctorId}`
+                }
+                component={Link}
+                sx={{ m: 1 }}
+              >
+                <CalendarMonthIcon sx={{ marginRight: "10px" }} />
+                Manage Appointments
+              </Button>
             )}
           </Box>
           {currentuser ? (

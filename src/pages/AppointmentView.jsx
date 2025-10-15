@@ -28,12 +28,12 @@ dayjs.extend(customParseFormat);
 
 export default function AppointmentView() {
   const [cookies] = useCookies(["currentuser"]);
-  const { currentuser } = cookies;
-  const { token } = currentuser;
+  const { currentuser = {} } = cookies;
+  const { token = "" } = currentuser;
   const { id } = useParams();
   const navigate = useNavigate();
   const today = dayjs();
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState(""); // user id for navigation purposes
   const [specialties, setSpecialties] = useState([]);
   const [doctorId, setDoctorId] = useState("");
   const [doctorName, setDoctorName] = useState("");
@@ -68,28 +68,31 @@ export default function AppointmentView() {
   );
 
   useEffect(() => {
+    if (currentuser && currentuser.role === "patient") {
+      setUserId(patientId);
+    } else if (currentuser && currentuser.role === "doctor") {
+      setUserId(doctorId);
+    } else {
+      navigate("/login");
+      toast.error("Something went wrong, please login first.");
+    }
+  }, [currentuser, patientId, doctorId]);
+
+  useEffect(() => {
     getAppointment(id)
       .then((appointmentData) => {
-        if (
-          !currentuser ||
-          currentuser.role !== "patient" ||
-          currentuser.role !== "doctor"
-        ) {
-          navigate("/");
-          toast.error("Access denied");
-        }
+        setDoctorId(appointmentData ? appointmentData.doctorId._id : "");
         setDoctorName(appointmentData ? appointmentData.doctorId.name : "");
         setSpecialty(
           appointmentData ? appointmentData.doctorId.specialty._id : ""
         );
-        setDoctorId(appointmentData ? appointmentData.doctorId._id : "");
+        setPatientId(appointmentData ? appointmentData.patientId._id : "");
         setPatientName(appointmentData ? appointmentData.patientId.name : "");
         setEmail(appointmentData ? appointmentData.patientId.email : "");
         setNric(appointmentData ? appointmentData.patientId.nric : "");
         setPhoneNumber(
           appointmentData ? appointmentData.patientId.phone_number : ""
         );
-        setPatientId(appointmentData ? appointmentData.patientId._id : "");
         // ISO datetime string from backend
         const isoDateTime = appointmentData.dateTime;
 
@@ -119,17 +122,6 @@ export default function AppointmentView() {
         toast.error(error.message);
       });
   }, []);
-
-  useEffect(() => {
-    if (currentuser && currentuser.role === "patient") {
-      setUserId(patientId);
-    } else if (currentuser && currentuser.role === "doctor") {
-      setUserId(doctorId);
-    } else {
-      navigate("/login");
-      toast.error("Something went wrong, please login first.");
-    }
-  }, [currentuser, patientId, doctorId]);
 
   const handleUpdateAppointment = async () => {
     // Combine date and time

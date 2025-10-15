@@ -2,7 +2,15 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import { getAppointment } from "../api/api_appointments";
 import { useNavigate, useParams } from "react-router";
-import { Box, Button, Container, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+} from "@mui/material";
 import { toast } from "sonner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -18,8 +26,8 @@ dayjs.extend(timezone);
 
 export default function QueuePage() {
   const [cookies] = useCookies();
-  const { currentuser } = cookies;
-  const { token } = currentuser;
+  const { currentuser = {} } = cookies;
+  const { token = "" } = currentuser;
   const { id } = useParams();
   const navigate = useNavigate();
   const [appointmentId, setAppointmentId] = useState("");
@@ -35,28 +43,21 @@ export default function QueuePage() {
   const [patientNumber, setPatientNumber] = useState("");
 
   useEffect(() => {
-    if (!currentuser || currentuser.role !== "patient") {
-      navigate("/");
-      toast.error("Access denied");
-    }
-
     getAppointment(id)
       .then((appointmentData) => {
-        // set appointment data
-        console.log(appointmentData);
-        setAppointmentId(appointmentData ? appointmentData._id : "");
         // if a completed / cancelled appointment, redirect out.
-        if (currentuser && currentuser.role !== "patient") {
+        if (!currentuser || currentuser.role !== "patient") {
           navigate("/");
-          toast.error("Access denied.");
         } else if (
-          appointmentData.status !== "scheduled" &&
-          appointmentData.status !== "checked-in" &&
+          (appointmentData.status !== "scheduled" &&
+            appointmentData.status !== "checked-in") ||
           !dayjs(appointmentData.dateTime).isSame(dayjs(), "day")
         ) {
           navigate(`/manage-appointments/${appointmentData.patientId._id}`);
-          toast("heloo");
+          toast("Cannot check in for this appointment.");
         }
+        // set appointment data
+        setAppointmentId(appointmentData ? appointmentData._id : "");
         // doctor info
         setDoctorId(appointmentData ? appointmentData.doctorId._id : "");
         setDoctorName(appointmentData ? appointmentData.doctorId.name : "");
@@ -127,41 +128,166 @@ export default function QueuePage() {
   return (
     <>
       <Header />
-      <Container sx={{ mt: "40px", mb: "20px" }}>
-        <Typography variant="h3">Check-In Appointment</Typography>
-        <Typography>
-          {patientNumber
-            ? "Please wait for your number."
-            : "Do you want to check in to this appointment?"}
-        </Typography>
+      <Container maxWidth="md" sx={{ mt: 6, mb: 4 }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: { xs: "10px", sm: "200px", md: "275px" },
+          }}
+        >
+          {/* Page Title */}
+          <Box>
+            <Typography variant="h4" fontWeight="bold" gutterBottom>
+              Check-In Appointment
+            </Typography>
 
-        <Box my={3}>
-          <Typography>Appointment Details: </Typography>
-          <Typography>Date: {date}</Typography>
-          <Typography>Doctor Name: {doctorName}</Typography>
-          <Typography>Specialty: {specialty}</Typography>
-          <Typography>Patient Name: {patientName}</Typography>
-          <Typography>Patient Email: {email}</Typography>
-          <Typography>Patient Phone Number: {phoneNumber}</Typography>
+            <Typography variant="subtitle1" color="text.secondary" mb={3}>
+              {patientNumber
+                ? "Thank you for checking in. Please wait for your turn."
+                : "Confirm your details below to check in for your appointment."}
+            </Typography>
+          </Box>
+
+          {/* Action Buttons */}
+          {!patientNumber ? (
+            <Box textAlign="center" mt={4}>
+              <Button
+                variant="contained"
+                color="success"
+                size="large"
+                onClick={handleCheckIn}
+                sx={{ borderRadius: 2, px: 4, py: 1.2 }}
+              >
+                Check In
+              </Button>
+            </Box>
+          ) : null}
         </Box>
-        {!patientNumber && (
-          <Button
-            variant="contained"
-            color="success"
-            onClick={() => handleCheckIn()}
-          >
-            Check In
-          </Button>
-        )}
-        <Box>
-          <Typography>
+
+        {/* Appointment Info Card */}
+        <Card
+          elevation={4}
+          sx={{
+            borderRadius: 3,
+            p: 3,
+            mb: 4,
+            backgroundColor: "background.paper",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CardContent>
+            <Typography variant="h6" gutterBottom textAlign="center" mb={3}>
+              Appointment Details
+            </Typography>
+
+            <Grid container spacing={3}>
+              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                >
+                  Date
+                </Typography>
+                <Typography variant="body1" textAlign="center">
+                  {date}
+                </Typography>
+              </Grid>
+
+              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                >
+                  Doctor
+                </Typography>
+                <Typography variant="body1" textAlign="center">
+                  {doctorName}
+                </Typography>
+              </Grid>
+
+              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                >
+                  Specialty
+                </Typography>
+                <Typography variant="body1" textAlign="center">
+                  {specialty}
+                </Typography>
+              </Grid>
+
+              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                >
+                  Your Name (Patient)
+                </Typography>
+                <Typography variant="body1" textAlign="center">
+                  {patientName}
+                </Typography>
+              </Grid>
+
+              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                >
+                  Email
+                </Typography>
+                <Typography variant="body1" textAlign="center">
+                  {email}
+                </Typography>
+              </Grid>
+
+              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                >
+                  Phone Number
+                </Typography>
+                <Typography variant="body1" textAlign="center">
+                  {phoneNumber}
+                </Typography>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+
+        {/* Queue Info Section */}
+        <Card
+          elevation={2}
+          sx={{
+            borderRadius: 3,
+            p: 3,
+            backgroundColor: "background.default",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Queue Status
+          </Typography>
+          <Typography variant="body1" mb={1}>
             Current queue number:{" "}
-            {currentNumber ? currentNumber : "No queue for today."}
+            <strong>{currentNumber || "No queue for today."}</strong>
           </Typography>
           {patientNumber && (
-            <Typography>Your queue number: {patientNumber}</Typography>
+            <Typography variant="body1" color="success.main" fontWeight="bold">
+              Your queue number: {patientNumber}
+            </Typography>
           )}
-        </Box>
+        </Card>
       </Container>
     </>
   );

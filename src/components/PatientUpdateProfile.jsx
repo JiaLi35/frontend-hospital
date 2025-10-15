@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate, useParams } from "react-router";
 import { getPatientById, updatePatient } from "../api/api_patients";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function PatientUpdateProfile() {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ export default function PatientUpdateProfile() {
   const [nric, setNric] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [patientId, setPatientId] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getPatientById(id)
@@ -44,19 +47,14 @@ export default function PatientUpdateProfile() {
       toast.error("Please fill in all the fields.");
     } else {
       try {
-        const updatedPatient = await updatePatient(
-          patientId,
-          phoneNumber,
-          token
-        );
-        console.log(updatedPatient);
+        setLoading(true);
+        await updatePatient(patientId, phoneNumber, token);
         toast.success("Patient Profile successfully updated.");
-        setTimeout(() => {
-          window.location.reload();
-        }, 600);
+        setLoading(false);
       } catch (error) {
         console.log(error);
         toast.error(error?.response?.data?.message);
+        setLoading(false);
       }
     }
   };
@@ -139,12 +137,29 @@ export default function PatientUpdateProfile() {
               variant="contained"
               fullWidth
               onClick={handleUpdatePatient}
+              sx={{ mb: "10px" }}
             >
               Update Profile
+            </Button>
+            <Button
+              color="error"
+              variant="contained"
+              fullWidth
+              onClick={() => {
+                navigate("/");
+              }}
+            >
+              Cancel
             </Button>
           </Paper>
         </Container>
       </Box>
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }

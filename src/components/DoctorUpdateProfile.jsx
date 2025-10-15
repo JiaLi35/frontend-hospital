@@ -46,6 +46,7 @@ export default function DoctorUpdateProfile() {
   const [biography, setBiography] = useState("");
   const [image, setImage] = useState(null);
   const [doctorId, setDoctorId] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getDoctorById(id)
@@ -85,18 +86,14 @@ export default function DoctorUpdateProfile() {
       toast.error("Please fill in all the fields.");
     } else {
       try {
-        const updatedDoctor = await updateDoctor(
-          doctorId,
-          biography.trim(),
-          image,
-          token
-        );
-        console.log(updatedDoctor);
+        setLoading(true);
+        await updateDoctor(doctorId, biography.trim(), image, token);
         toast.success("Doctor Profile successfully updated.");
-        navigate(`/doctor/${id}`);
+        setLoading(false);
       } catch (error) {
         console.log(error);
         toast.error(error?.response?.data?.message);
+        setLoading(false);
       }
     }
   };
@@ -241,6 +238,12 @@ export default function DoctorUpdateProfile() {
           </Paper>
         </Container>
       </Box>
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }

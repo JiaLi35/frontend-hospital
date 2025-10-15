@@ -21,7 +21,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import BlockIcon from "@mui/icons-material/Block";
 import DoneIcon from "@mui/icons-material/Done";
 import Header from "./Header";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   cancelAppointment,
   completeAppointment,
@@ -38,10 +38,10 @@ dayjs.extend(timezone);
 import Swal from "sweetalert2";
 
 export default function DoctorAppointmentPage() {
+  const { id } = useParams();
   const [cookies] = useCookies(["currentuser"]);
   const { currentuser = {} } = cookies;
   const { token = "" } = currentuser;
-  const { id } = useParams();
   const [status, setStatus] = useState("checked-in");
   const [appointments, setAppointments] = useState([]);
   const isMobile = useMediaQuery("(max-width:875px)");
@@ -106,6 +106,73 @@ export default function DoctorAppointmentPage() {
     }
   };
 
+  // Auto-cancel appointments that are more than 30 minutes past their scheduled time.
+  // - For appointments already past the 30-min deadline, cancel immediately.
+  // - For future deadlines, schedule a timeout to auto-cancel when the deadline is reached.
+  // Uses a ref to keep track of timers and already-processed IDs to avoid duplicate API calls.
+  const cancelTimersRef = useRef({ timers: {}, processed: new Set() });
+
+  useEffect(() => {
+    // clear existing timers
+    Object.values(cancelTimersRef.current.timers).forEach((t) =>
+      clearTimeout(t)
+    );
+    cancelTimersRef.current.timers = {};
+
+    if (!appointments || appointments.length === 0) return;
+
+    appointments.forEach((appt) => {
+      if (!appt || !appt._id) return;
+      const apptId = appt._id;
+      // skip if all appointments that aren't scheduled.
+      if (appt.status !== "scheduled") return;
+      // don't re-process IDs we've already scheduled/cancelled
+      if (cancelTimersRef.current.processed.has(apptId)) return;
+
+      const deadline = dayjs(appt.dateTime).add(30, "minute").local();
+      const now = dayjs().local();
+
+      // if we're already past the deadline, cancel immediately
+      if (now.isAfter(deadline)) {
+        cancelTimersRef.current.processed.add(apptId);
+        (async () => {
+          try {
+            await cancelAppointment(apptId, token);
+            refreshAppointments();
+            toast.success("Appointment auto-cancelled after 30 minutes");
+          } catch (error) {
+            console.error("Auto-cancel failed", error);
+          }
+        })();
+        return;
+      }
+
+      // otherwise schedule a timeout to cancel when deadline is reached
+      const msUntilDeadline = deadline.diff(now);
+      const timer = setTimeout(async () => {
+        try {
+          await cancelAppointment(apptId, token);
+          refreshAppointments();
+          toast.success("Appointment auto-cancelled after 30 minutes");
+        } catch (error) {
+          console.error("Auto-cancel failed", error);
+        }
+        cancelTimersRef.current.processed.add(apptId);
+        delete cancelTimersRef.current.timers[apptId];
+      }, msUntilDeadline);
+
+      cancelTimersRef.current.timers[apptId] = timer;
+      cancelTimersRef.current.processed.add(apptId);
+    });
+
+    return () => {
+      Object.values(cancelTimersRef.current.timers).forEach((t) =>
+        clearTimeout(t)
+      );
+      cancelTimersRef.current.timers = {};
+    };
+  }, [appointments, token]);
+
   return (
     <>
       <Header />
@@ -153,11 +220,27 @@ export default function DoctorAppointmentPage() {
                   return (
                     <TableRow key={appointment._id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>
-                        <Typography>{appointment.patientId.name}</Typography>
+                      <TableCell sx={{ maxWidth: "200px" }}>
+                        <Typography
+                          sx={{
+                            whiteSpace: "normal", // allow wrapping
+                            overflowWrap: "break-word", // break long words if necessary
+                            wordBreak: "break-word", // additional safety for long strings
+                          }}
+                        >
+                          {appointment.patientId.name}
+                        </Typography>
                       </TableCell>
-                      <TableCell>
-                        <Typography>{appointment.patientId.email}</Typography>
+                      <TableCell sx={{ maxWidth: "200px" }}>
+                        <Typography
+                          sx={{
+                            whiteSpace: "normal", // allow wrapping
+                            overflowWrap: "break-word", // break long words if necessary
+                            wordBreak: "break-word", // additional safety for long strings
+                          }}
+                        >
+                          {appointment.patientId.email}
+                        </Typography>
                       </TableCell>
                       <TableCell>
                         <Typography>{localDateAndTime}</Typography>

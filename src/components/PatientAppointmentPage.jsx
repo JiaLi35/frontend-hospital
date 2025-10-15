@@ -16,11 +16,12 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import BlockIcon from "@mui/icons-material/Block";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Header from "./Header";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   getAppointmentsByPatientId,
   cancelAppointment,
@@ -90,9 +91,92 @@ export default function PatientAppointmentPage() {
     return dayjs(date).local().format("DD MMM YYYY, hh:mm A");
   };
 
+  // returns true when current time is within +/- 30 minutes of the appointment date/time
   const isToday = (date) => {
-    return dayjs(date).isSame(dayjs(), "day");
+    if (!date) return false;
+    // normalize both times to local to avoid timezone mismatches
+    const now = dayjs().local();
+    const target = dayjs(date).local();
+    // absolute difference in milliseconds
+    const diffMs = Math.abs(now.diff(target));
+    const THIRTY_MIN_MS = 30 * 60 * 1000;
+    return diffMs <= THIRTY_MIN_MS;
   };
+
+  // Auto-cancel appointments that are more than 30 minutes past their scheduled time.
+  // - For appointments already past the 30-min deadline, cancel immediately.
+  // - For future deadlines, schedule a timeout to auto-cancel when the deadline is reached.
+  // Uses a ref to keep track of timers and already-processed IDs to avoid duplicate API calls.
+  const cancelTimersRef = useRef({ timers: {}, processed: new Set() });
+
+  useEffect(() => {
+    // clear existing timers
+    Object.values(cancelTimersRef.current.timers).forEach((t) =>
+      clearTimeout(t)
+    );
+    cancelTimersRef.current.timers = {};
+
+    if (!appointments || appointments.length === 0) return;
+
+    appointments.forEach((appt) => {
+      if (!appt || !appt._id) return;
+      const apptId = appt._id;
+      // skip if all appointments that aren't scheduled.
+      if (appt.status !== "scheduled") return;
+      // don't re-process IDs we've already scheduled/cancelled
+      if (cancelTimersRef.current.processed.has(apptId)) return;
+
+      const deadline = dayjs(appt.dateTime).add(30, "minute").local();
+      const now = dayjs().local();
+
+      // if we're already past the deadline, cancel immediately
+      if (now.isAfter(deadline)) {
+        cancelTimersRef.current.processed.add(apptId);
+        (async () => {
+          try {
+            await cancelAppointment(apptId, token);
+            const updatedAppointments = await getAppointmentsByPatientId(
+              id,
+              status
+            );
+            setAppointments(updatedAppointments);
+            toast.success("Appointment auto-cancelled after 30 minutes");
+          } catch (error) {
+            console.error("Auto-cancel failed", error);
+          }
+        })();
+        return;
+      }
+
+      // otherwise schedule a timeout to cancel when deadline is reached
+      const msUntilDeadline = deadline.diff(now);
+      const timer = setTimeout(async () => {
+        try {
+          await cancelAppointment(apptId, token);
+          const updatedAppointments = await getAppointmentsByPatientId(
+            id,
+            status
+          );
+          setAppointments(updatedAppointments);
+          toast.success("Appointment auto-cancelled after 30 minutes");
+        } catch (error) {
+          console.error("Auto-cancel failed", error);
+        }
+        cancelTimersRef.current.processed.add(apptId);
+        delete cancelTimersRef.current.timers[apptId];
+      }, msUntilDeadline);
+
+      cancelTimersRef.current.timers[apptId] = timer;
+      cancelTimersRef.current.processed.add(apptId);
+    });
+
+    return () => {
+      Object.values(cancelTimersRef.current.timers).forEach((t) =>
+        clearTimeout(t)
+      );
+      cancelTimersRef.current.timers = {};
+    };
+  }, [appointments, token]);
 
   return (
     <>
@@ -130,7 +214,7 @@ export default function PatientAppointmentPage() {
                   <TableCell>Specialty</TableCell>
                   <TableCell>Date & Time</TableCell>
                   <TableCell>Status</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell sx={{ textAlign: "right" }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -141,11 +225,25 @@ export default function PatientAppointmentPage() {
                   return (
                     <TableRow key={appointment._id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>
-                        <Typography>{appointment.doctorId.name}</Typography>
+                      <TableCell sx={{ maxWidth: "200px" }}>
+                        <Typography
+                          sx={{
+                            whiteSpace: "normal", // allow wrapping
+                            overflowWrap: "break-word", // break long words if necessary
+                            wordBreak: "break-word", // additional safety for long strings
+                          }}
+                        >
+                          {appointment.doctorId.name}
+                        </Typography>
                       </TableCell>
-                      <TableCell>
-                        <Typography>
+                      <TableCell sx={{ maxWidth: "200px" }}>
+                        <Typography
+                          sx={{
+                            whiteSpace: "normal", // allow wrapping
+                            overflowWrap: "break-word", // break long words if necessary
+                            wordBreak: "break-word", // additional safety for long strings
+                          }}
+                        >
                           {appointment.doctorId.specialty.specialty}
                         </Typography>
                       </TableCell>
@@ -167,58 +265,60 @@ export default function PatientAppointmentPage() {
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        {todayDate &&
-                          (appointment.status === "scheduled" ||
+                        <Box textAlign={"right"}>
+                          {todayDate &&
+                            (appointment.status === "scheduled" ||
+                              appointment.status === "checked-in") && (
+                              <Tooltip title="Check-In">
+                                <Button
+                                  color="success"
+                                  variant="contained"
+                                  sx={{ marginRight: "10px" }}
+                                  to={`/queue/${appointment._id}`}
+                                  component={Link}
+                                >
+                                  <AssignmentTurnedInIcon />
+                                </Button>
+                              </Tooltip>
+                            )}
+                          <Tooltip
+                            title={
+                              appointment.status === "cancelled" ||
+                              appointment.status === "completed"
+                                ? "View Appointment Details"
+                                : "Reschedule Appointment"
+                            }
+                          >
+                            <Button
+                              color="primary"
+                              variant="contained"
+                              to={`/appointment/${appointment._id}`}
+                              component={Link}
+                            >
+                              {appointment.status === "cancelled" ||
+                              appointment.status === "completed" ? (
+                                <VisibilityIcon />
+                              ) : (
+                                <CalendarMonthIcon />
+                              )}
+                            </Button>
+                          </Tooltip>
+                          {(appointment.status === "scheduled" ||
                             appointment.status === "checked-in") && (
-                            <Tooltip title="Check-In">
+                            <Tooltip title="Cancel Appointment">
                               <Button
-                                color="success"
+                                color="error"
                                 variant="contained"
-                                sx={{ marginRight: "10px" }}
-                                to={`/queue/${appointment._id}`}
-                                component={Link}
+                                sx={{ ml: 1 }}
+                                onClick={() =>
+                                  handleCancelAppointment(appointment._id)
+                                }
                               >
-                                Check In
+                                <BlockIcon />
                               </Button>
                             </Tooltip>
                           )}
-                        <Tooltip
-                          title={
-                            appointment.status === "cancelled" ||
-                            appointment.status === "completed"
-                              ? "View Appointment Details"
-                              : "Reschedule Appointment"
-                          }
-                        >
-                          <Button
-                            color="primary"
-                            variant="contained"
-                            to={`/appointment/${appointment._id}`}
-                            component={Link}
-                          >
-                            {appointment.status === "cancelled" ||
-                            appointment.status === "completed" ? (
-                              <VisibilityIcon />
-                            ) : (
-                              <CalendarMonthIcon />
-                            )}
-                          </Button>
-                        </Tooltip>
-                        {(appointment.status === "scheduled" ||
-                          appointment.status === "checked-in") && (
-                          <Tooltip title="Cancel Appointment">
-                            <Button
-                              color="error"
-                              variant="contained"
-                              sx={{ ml: 1 }}
-                              onClick={() =>
-                                handleCancelAppointment(appointment._id)
-                              }
-                            >
-                              <BlockIcon />
-                            </Button>
-                          </Tooltip>
-                        )}
+                        </Box>
                       </TableCell>
                     </TableRow>
                   );
@@ -277,8 +377,14 @@ export default function PatientAppointmentPage() {
                       (appointment.status === "scheduled" ||
                         appointment.status === "checked-in") && (
                         <Tooltip title="Check-In">
-                          <Button color="success" variant="contained">
-                            Check In
+                          <Button
+                            color="success"
+                            variant="contained"
+                            sx={{ marginRight: "10px" }}
+                            to={`/queue/${appointment._id}`}
+                            component={Link}
+                          >
+                            <AssignmentTurnedInIcon />
                           </Button>
                         </Tooltip>
                       )}

@@ -48,12 +48,13 @@ export default function LoginPage() {
       <Box
         sx={{
           minHeight: "100vh",
-          backgroundImage:
-            "url('https://www.bcie.org/fileadmin/_processed_/6/a/csm_hospital_web_b185b30ce1.jpg')",
-          backgroundPosition: "start",
+          backgroundImage: "url('/login_bg.jpg')",
+          backgroundSize: { md: "cover", lg: "cover", xl: "initial" }, // ensures image fills entire space
+          backgroundPosition: { md: "center", lg: "center", xl: "initial" }, // centers it nicely
           backgroundRepeat: "no-repeat",
+          backgroundColor: "rgb(245, 245, 245)",
           display: "flex",
-          flexDirection: "column", // make it a column layout
+          flexDirection: "column",
         }}
       >
         <Header />
@@ -63,11 +64,27 @@ export default function LoginPage() {
             flex: 1, // fills remaining height below header
             height: "100%",
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: {
+              sm: "center",
+              md: "center",
+              lg: "center",
+              xl: "flex-end",
+            },
             alignItems: "center",
           }}
         >
-          <Paper sx={{ padding: 3, width: "100%", maxWidth: "435px" }}>
+          <Paper
+            sx={{
+              padding: 4,
+              width: "100%",
+              maxWidth: "435px",
+              borderRadius: 3,
+              backgroundColor: "rgba(255, 255, 255, 0.9)", // translucent white
+              backdropFilter: "blur(10px)", // adds that "frosted glass" effect
+              boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)", // soft shadow for levitation
+              transition: "transform 0.3s ease, box-shadow 0.3s ease",
+            }}
+          >
             <Typography variant="h4" textAlign={"center"} mb={2}>
               Login
             </Typography>

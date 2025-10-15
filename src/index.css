@@ -11,7 +11,7 @@
   min-width: 0 !important; /* remove MUI default min width */
   padding: 0; /* remove default padding */
   width: 48px; /* icon-only width */
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
   display: flex;
   align-items: center;
   justify-content: center !important; /* center icon when collapsed */

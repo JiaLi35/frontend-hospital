@@ -74,26 +74,44 @@ export default function SignUpPage() {
       <Box
         sx={{
           minHeight: "100vh",
-          backgroundImage: "url('/images/background.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundImage: "url('/signup_bg.png')",
+          backgroundSize: { md: "cover", lg: "cover", xl: "initial" }, // ensures image fills entire space
+          backgroundPosition: { md: "center", lg: "center", xl: "initial" }, // centers it nicely
           backgroundRepeat: "no-repeat",
+          backgroundColor: "rgb(245, 245, 245)",
           display: "flex",
-          flexDirection: "column", // make it a column layout
+          flexDirection: "column",
         }}
       >
         <Header />
         <Container
-          maxWidth="md"
+          maxWidth="xl"
           sx={{
             flex: 1, // fills remaining height below header
             height: "100%",
             display: "flex",
-            justifyContent: "center",
+            justifyContent: {
+              sm: "center",
+              md: "center",
+              lg: "center",
+              xl: "flex-end",
+            },
             alignItems: "center",
           }}
         >
-          <Paper sx={{ padding: 3, width: "100%", maxWidth: "500px" }}>
+          <Paper
+            sx={{
+              marginRight: { xl: "10px" },
+              padding: 4,
+              width: "100%",
+              maxWidth: "500px",
+              borderRadius: 3,
+              backgroundColor: "rgba(255, 255, 255, 0.9)", // translucent white
+              backdropFilter: "blur(10px)", // adds that "frosted glass" effect
+              boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)", // soft shadow for levitation
+              transition: "transform 0.3s ease, box-shadow 0.3s ease",
+            }}
+          >
             <Typography variant="h4" textAlign={"center"} mb={2}>
               Sign Up
             </Typography>

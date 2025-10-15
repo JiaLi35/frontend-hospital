@@ -175,22 +175,22 @@ export default function AppointmentAdd() {
                 label="Doctor Name"
                 placeholder="Name"
                 fullWidth
-                disabled
                 value={doctorName}
                 onChange={(event) => {
                   setDoctorName(event.target.value);
                 }}
+                slotProps={{ htmlInput: { readOnly: true } }}
               />
               <FormControl sx={{ width: "100%" }}>
                 <InputLabel id="demo-simple-select-label">Specialty</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
-                  disabled
                   value={specialty}
                   label="Specialty"
                   onChange={(event) => {
                     setSpecialty(event.target.value);
                   }}
+                  slotProps={{ htmlInput: { readOnly: true } }}
                 >
                   {specialties.map((spe) => (
                     <MenuItem value={spe._id} key={spe._id}>
@@ -298,7 +298,6 @@ export default function AppointmentAdd() {
             </Grid>
             <Box mb={2} display={"flex"} gap={3}>
               <TextField
-                disabled
                 label="Patient Name"
                 placeholder="Name"
                 fullWidth
@@ -306,21 +305,21 @@ export default function AppointmentAdd() {
                 onChange={(event) => {
                   setPatientName(event.target.value);
                 }}
+                slotProps={{ htmlInput: { readOnly: true } }}
               />
               <TextField
                 label="Email"
-                disabled
                 placeholder="Email"
                 fullWidth
                 value={email}
                 onChange={(event) => {
                   setEmail(event.target.value);
                 }}
+                slotProps={{ htmlInput: { readOnly: true } }}
               />
             </Box>
             <Box mb={2} display={"flex"} gap={3}>
               <TextField
-                disabled
                 label="NRIC No."
                 placeholder="NRIC No."
                 fullWidth
@@ -333,9 +332,9 @@ export default function AppointmentAdd() {
                     .replace(/\D/g, "") // remove non-digits
                     .slice(0, 12); // limit to 12 digits
                 }}
+                slotProps={{ htmlInput: { readOnly: true } }}
               />
               <TextField
-                disabled
                 label="Phone Number"
                 placeholder="Phone Number"
                 fullWidth
@@ -348,6 +347,7 @@ export default function AppointmentAdd() {
                     .replace(/\D/g, "") // remove non-digits
                     .slice(0, 10); // limit to 10 digits
                 }}
+                slotProps={{ htmlInput: { readOnly: true } }}
               />
             </Box>
             <Button
