@@ -12,6 +12,7 @@ import DoctorPage from "./pages/DoctorPage";
 import AppointmentAdd from "./pages/AppointmentAdd";
 import AppointmentView from "./pages/AppointmentView";
 import AppointmentPage from "./pages/AppointmentPage";
+import QueuePage from "./pages/QueuePage";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             />
             <Route path="/appointment/:id" element={<AppointmentView />} />
             <Route path="/specialties" element={<SpecialtiesPage />} />
+            <Route path="/queue/:id" element={<QueuePage />} />
           </Routes>
           <Toaster closeButton />
         </BrowserRouter>

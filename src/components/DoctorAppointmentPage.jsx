@@ -41,7 +41,7 @@ export default function DoctorAppointmentPage() {
   const { currentuser = {} } = cookies;
   const { token = "" } = currentuser;
   const { id } = useParams();
-  const [status, setStatus] = useState("scheduled");
+  const [status, setStatus] = useState("checked-in");
   const [appointments, setAppointments] = useState([]);
   const isMobile = useMediaQuery("(max-width:875px)");
 
@@ -116,6 +116,10 @@ export default function DoctorAppointmentPage() {
             }}
           >
             <MenuItem value="all">All Status</MenuItem>
+            <MenuItem value="checked-in&status=scheduled">
+              Scheduled & Check In
+            </MenuItem>
+            <MenuItem value="checked-in">Checked-In</MenuItem>
             <MenuItem value="scheduled">Scheduled</MenuItem>
             <MenuItem value="completed">Completed</MenuItem>
             <MenuItem value="cancelled">Cancelled</MenuItem>
@@ -170,10 +174,9 @@ export default function DoctorAppointmentPage() {
                         <Box display={"flex"} gap={1}>
                           <Tooltip
                             title={
-                              appointment.status === "cancelled" ||
-                              appointment.status === "completed"
-                                ? "Reschedule Appointment"
-                                : "View Appointment"
+                              appointment.status !== "scheduled"
+                                ? "View Appointment"
+                                : "Reschedule Appointment"
                             }
                           >
                             <Button
@@ -182,36 +185,40 @@ export default function DoctorAppointmentPage() {
                               to={`/appointment/${appointment._id}`}
                               component={Link}
                             >
-                              <CalendarMonthIcon />
+                              {appointment.status !== "scheduled" ? (
+                                <VisibilityIcon />
+                              ) : (
+                                <CalendarMonthIcon />
+                              )}
                             </Button>
                           </Tooltip>
-                          {appointment.status === "cancelled" ||
-                          appointment.status === "completed" ? null : (
-                            <Box>
-                              <Tooltip title="Complete Appointment">
-                                <Button
-                                  color="success"
-                                  variant="contained"
-                                  onClick={() =>
-                                    handleCompleteAppointment(appointment._id)
-                                  }
-                                >
-                                  <DoneIcon />
-                                </Button>
-                              </Tooltip>
-                              <Tooltip title="Cancel Appointment">
-                                <Button
-                                  color="error"
-                                  variant="contained"
-                                  sx={{ ml: 1 }}
-                                  onClick={() =>
-                                    handleCancelAppointment(appointment._id)
-                                  }
-                                >
-                                  <BlockIcon />
-                                </Button>
-                              </Tooltip>
-                            </Box>
+                          {appointment.status === "checked-in" && (
+                            <Tooltip title="Complete Appointment">
+                              <Button
+                                color="success"
+                                variant="contained"
+                                onClick={() =>
+                                  handleCompleteAppointment(appointment._id)
+                                }
+                              >
+                                <DoneIcon />
+                              </Button>
+                            </Tooltip>
+                          )}
+                          {(appointment.status === "scheduled" ||
+                            appointment.status === "checked-in") && (
+                            <Tooltip title="Cancel Appointment">
+                              <Button
+                                color="error"
+                                variant="contained"
+                                sx={{ ml: 1 }}
+                                onClick={() =>
+                                  handleCancelAppointment(appointment._id)
+                                }
+                              >
+                                <BlockIcon />
+                              </Button>
+                            </Tooltip>
                           )}
                         </Box>
                       </TableCell>
@@ -270,10 +277,9 @@ export default function DoctorAppointmentPage() {
                   <Box display="flex" justifyContent="flex-end" gap={1} mt={1}>
                     <Tooltip
                       title={
-                        appointment.status === "cancelled" ||
-                        appointment.status === "completed"
-                          ? "Reschedule Appointment"
-                          : "View Appointment"
+                        appointment.status !== "scheduled"
+                          ? "View Appointment"
+                          : "Reschedule Appointment"
                       }
                     >
                       <Button
@@ -283,37 +289,40 @@ export default function DoctorAppointmentPage() {
                         color="primary"
                         variant="contained"
                       >
-                        <CalendarMonthIcon fontSize="small" />
+                        {appointment.status !== "scheduled" ? (
+                          <VisibilityIcon fontSize="small" />
+                        ) : (
+                          <CalendarMonthIcon fontSize="small" />
+                        )}
                       </Button>
                     </Tooltip>
-                    {appointment.status === "cancelled" ||
-                    appointment.status === "completed" ? null : (
-                      <Box display="flex" gap={1}>
-                        <Tooltip title="Complete Appointment">
-                          <Button
-                            color="success"
-                            variant="contained"
-                            size="small"
-                            onClick={() =>
-                              handleCompleteAppointment(appointment._id)
-                            }
-                          >
-                            <DoneIcon fontSize="small" />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip title="Cancel Appointment">
-                          <Button
-                            color="error"
-                            variant="contained"
-                            size="small"
-                            onClick={() =>
-                              handleCancelAppointment(appointment._id)
-                            }
-                          >
-                            <BlockIcon fontSize="small" />
-                          </Button>
-                        </Tooltip>
-                      </Box>
+                    {appointment.status === "checked-in" && (
+                      <Tooltip title="Complete Appointment">
+                        <Button
+                          color="success"
+                          variant="contained"
+                          onClick={() =>
+                            handleCompleteAppointment(appointment._id)
+                          }
+                        >
+                          <DoneIcon />
+                        </Button>
+                      </Tooltip>
+                    )}
+                    {(appointment.status === "scheduled" ||
+                      appointment.status === "checked-in") && (
+                      <Tooltip title="Cancel Appointment">
+                        <Button
+                          color="error"
+                          variant="contained"
+                          sx={{ ml: 1 }}
+                          onClick={() =>
+                            handleCancelAppointment(appointment._id)
+                          }
+                        >
+                          <BlockIcon />
+                        </Button>
+                      </Tooltip>
                     )}
                   </Box>
                 </Box>

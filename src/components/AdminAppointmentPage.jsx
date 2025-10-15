@@ -95,6 +95,7 @@ export default function AdminAppointmentPage() {
             }}
           >
             <MenuItem value="all">All Status</MenuItem>
+            <MenuItem value="checked-in">Checked-In</MenuItem>
             <MenuItem value="scheduled">Scheduled</MenuItem>
             <MenuItem value="completed">Completed</MenuItem>
             <MenuItem value="cancelled">Cancelled</MenuItem>

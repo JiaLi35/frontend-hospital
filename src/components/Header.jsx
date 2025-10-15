@@ -123,7 +123,7 @@ export default function Header() {
               >
                 Find a Doctor
               </MenuItem>
-              {currentuser && currentuser.role === "admin" ? (
+              {currentuser && currentuser.role === "admin" && (
                 <Box>
                   <MenuItem to="/add-doctor" component={Link} sx={{ m: 1 }}>
                     Add a Doctor
@@ -139,25 +139,24 @@ export default function Header() {
                     Manage Appointments
                   </MenuItem>
                 </Box>
-              ) : null}
-              {currentuser && currentuser.role === "doctor" ? (
-                <MenuItem
-                  to={`/manage-appointments/${doctorId}`}
-                  component={Link}
-                  sx={{ m: 1 }}
-                >
-                  Manage Appointments
-                </MenuItem>
-              ) : null}
-              {currentuser && currentuser.role === "patient" ? (
-                <MenuItem
-                  to={`/manage-appointments/${patientId}`}
-                  component={Link}
-                  sx={{ m: 1 }}
-                >
-                  Manage Appointments
-                </MenuItem>
-              ) : null}
+              )}
+              {currentuser && currentuser.role !== "admin" && (
+                <>
+                  <Button
+                    variant={"text"}
+                    color="dark"
+                    to={
+                      currentuser && currentuser.role === "patient"
+                        ? `/manage-appointments/${patientId}`
+                        : `/manage-appointments/${doctorId}`
+                    }
+                    component={Link}
+                    sx={{ m: 1 }}
+                  >
+                    Manage Appointments
+                  </Button>
+                </>
+              )}
             </Menu>
           </Box>
           <Typography
@@ -197,7 +196,7 @@ export default function Header() {
             >
               Find a Doctor
             </Button>
-            {currentuser && currentuser.role === "admin" ? (
+            {currentuser && currentuser.role === "admin" && (
               <>
                 <Button
                   variant={"text"}
@@ -227,33 +226,24 @@ export default function Header() {
                   Manage Appointments
                 </Button>
               </>
-            ) : null}
-            {currentuser && currentuser.role === "doctor" ? (
+            )}
+            {currentuser && currentuser.role !== "admin" && (
               <>
                 <Button
                   variant={"text"}
                   color="dark"
-                  to={`/manage-appointments/${doctorId}`}
+                  to={
+                    currentuser && currentuser.role === "patient"
+                      ? `/manage-appointments/${patientId}`
+                      : `/manage-appointments/${doctorId}`
+                  }
                   component={Link}
                   sx={{ m: 1 }}
                 >
                   Manage Appointments
                 </Button>
               </>
-            ) : null}
-            {currentuser && currentuser.role === "patient" ? (
-              <>
-                <Button
-                  variant={"text"}
-                  color="dark"
-                  to={`/manage-appointments/${patientId}`}
-                  component={Link}
-                  sx={{ m: 1 }}
-                >
-                  Manage Appointments
-                </Button>
-              </>
-            ) : null}
+            )}
           </Box>
           {currentuser ? (
             <Box sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
@@ -284,17 +274,20 @@ export default function Header() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem
-                  to={
-                    currentuser.role === "doctor"
-                      ? `/profile/${doctorId}`
-                      : `/profile/${patientId}`
-                  }
-                  component={Link}
-                >
-                  <PersonIcon fontSize="small" sx={{ marginRight: "10px" }} />
-                  <Typography>Manage Profile</Typography>
-                </MenuItem>
+                {currentuser && currentuser.role !== "admin" && (
+                  <MenuItem
+                    to={
+                      currentuser.role === "doctor"
+                        ? `/profile/${doctorId}`
+                        : `/profile/${patientId}`
+                    }
+                    component={Link}
+                  >
+                    <PersonIcon fontSize="small" sx={{ marginRight: "10px" }} />
+                    <Typography>Manage Profile</Typography>
+                  </MenuItem>
+                )}
+
                 <MenuItem
                   onClick={() => {
                     // remove the cookie
