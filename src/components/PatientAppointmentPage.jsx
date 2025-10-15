@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import BlockIcon from "@mui/icons-material/Block";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import Header from "./Header";
 import { useEffect, useState } from "react";
 import {
@@ -156,8 +157,8 @@ export default function PatientAppointmentPage() {
                           title={
                             appointment.status === "cancelled" ||
                             appointment.status === "completed"
-                              ? "Reschedule Appointment"
-                              : "View Appointment"
+                              ? "View Appointment Details"
+                              : "Reschedule Appointment"
                           }
                         >
                           <Button
@@ -166,7 +167,12 @@ export default function PatientAppointmentPage() {
                             to={`/appointment/${appointment._id}`}
                             component={Link}
                           >
-                            <CalendarMonthIcon />
+                            {appointment.status === "cancelled" ||
+                            appointment.status === "completed" ? (
+                              <VisibilityIcon />
+                            ) : (
+                              <CalendarMonthIcon />
+                            )}
                           </Button>
                         </Tooltip>
                         {appointment.status === "cancelled" ||
@@ -242,8 +248,8 @@ export default function PatientAppointmentPage() {
                       title={
                         appointment.status === "cancelled" ||
                         appointment.status === "completed"
-                          ? "Reschedule Appointment"
-                          : "View Appointment"
+                          ? "View Appointment Details"
+                          : "Reschedule Appointment"
                       }
                     >
                       <Button

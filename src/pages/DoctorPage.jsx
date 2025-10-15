@@ -43,9 +43,6 @@ export default function DoctorPage() {
     );
   }
 
-  const imageSrc =
-    API_URL + (doctor.image ? doctor.image : "uploads/default_image.png");
-
   return (
     <>
       <Header />
@@ -62,6 +59,7 @@ export default function DoctorPage() {
         <Card
           elevation={3}
           sx={{
+            padding: "20px 50px",
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
             alignItems: "center",
@@ -76,8 +74,12 @@ export default function DoctorPage() {
               width: { xs: "100%", md: 300 },
               height: { xs: 250, md: "auto" },
               objectFit: "cover",
+              borderRadius: "10px",
             }}
-            image={imageSrc}
+            image={
+              API_URL +
+              (doctor.image ? doctor.image : "uploads/default_image.png")
+            }
             alt={doctor.name}
           />
 

@@ -82,7 +82,7 @@ export default function AdminAppointmentPage() {
   return (
     <>
       <Header />
-      <Container>
+      <Container sx={{ mt: "40px", mb: "20px" }}>
         <FormControl sx={{ mb: "10px" }}>
           <InputLabel id="demo-simple-select-label">Status</InputLabel>
           <Select

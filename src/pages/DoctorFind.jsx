@@ -9,11 +9,15 @@ import {
   InputLabel,
   MenuItem,
   IconButton,
+  Tooltip,
+  Stack,
 } from "@mui/material";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
+import PersonIcon from "@mui/icons-material/Person";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../components/Header";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
@@ -22,8 +26,8 @@ import { deleteDoctor, getDoctors } from "../api/api_doctors";
 import { toast } from "sonner";
 import { API_URL } from "../api/constants";
 import { Link } from "react-router";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
+import "../index.css";
 
 // this is where everyone views each doctor
 export default function DoctorFind() {
@@ -33,6 +37,7 @@ export default function DoctorFind() {
   const [doctors, setDoctors] = useState([]);
   const [specialties, setSpecialties] = useState([]);
   const [specialty, setSpecialty] = useState("all");
+  const [expanded, setExpanded] = useState(null); // "profile" | "appointment" | null
 
   useEffect(() => {
     getSpecialties()
@@ -86,80 +91,177 @@ export default function DoctorFind() {
   return (
     <>
       <Header />
-      <Container>
-        <Box sx={{ py: 2 }}>
-          <FormControl>
-            <InputLabel id="demo-simple-select-label">Specialty</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={specialty}
-              label="Specialty"
-              onChange={(event) => {
-                setSpecialty(event.target.value);
-              }}
-            >
-              <MenuItem value="all">Choose a Specialty</MenuItem>
-              {specialties.map((spe) => (
-                <MenuItem value={spe._id}>{spe.specialty}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-        <Grid container spacing={4}>
-          {doctors.length === 0 ? (
-            <Typography variant="h4" sx={{ py: 3, textAlign: "center" }}>
-              No doctors found.
-            </Typography>
-          ) : null}
-          {doctors.map((doc) => (
-            <Grid size={{ xs: 12, sm: 12, md: 6, lg: 4 }} key={doc._id}>
-              <Card>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image={
-                    API_URL +
-                    (doc.image ? doc.image : "uploads/default_image.png")
-                  }
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {doc.name}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    {doc.biography ? doc.biography : "No Biography"}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    to={`/doctor/${doc._id}`}
-                    component={Link}
-                  >
-                    View Profile
-                  </Button>
-                  {currentuser && currentuser.role === "patient" ? (
-                    <Button
-                      size="small"
-                      to={`/book-appointment/${doc._id}`}
-                      component={Link}
+      <Box sx={{ width: "99vw", overflow: "hidden" }}>
+        <Box
+          component="img"
+          src="/Find a Doctor.png"
+          sx={{
+            height: "300px",
+            width: "100%",
+            objectFit: "cover", // fills box without stretching
+            objectPosition: "center", // keeps the focal point centered
+            display: "block", // removes extra spacing
+          }}
+        />
+      </Box>
+      <Container sx={{ py: 4 }}>
+        <Grid container spacing={3}>
+          {/* Filter Section */}
+          <Grid size={{ xs: 12, md: 2 }}>
+            <Box sx={{ py: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel id="specialty-select-label">Specialty</InputLabel>
+                <Select
+                  labelId="specialty-select-label"
+                  id="specialty-select"
+                  value={specialty}
+                  label="Specialty"
+                  onChange={(e) => setSpecialty(e.target.value)}
+                >
+                  <MenuItem value="all">All Specialties</MenuItem>
+                  {specialties.map((spe) => (
+                    <MenuItem key={spe._id} value={spe._id}>
+                      {spe.specialty}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          </Grid>
+
+          {/* Doctors Section */}
+          <Grid size={{ xs: 12, md: 10 }}>
+            <Grid container spacing={3}>
+              {doctors.length === 0 ? (
+                <Typography
+                  variant="h5"
+                  sx={{ py: 4, textAlign: "center", width: "100%" }}
+                >
+                  No doctors found.
+                </Typography>
+              ) : (
+                doctors.map((doc) => (
+                  <Grid key={doc._id} size={{ xs: 12, sm: 12, lg: 6 }}>
+                    <Card
+                      sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        alignItems: "center",
+                        p: 2,
+                        borderRadius: 3,
+                        gap: 2,
+                      }}
                     >
-                      Book an Appointment
-                    </Button>
-                  ) : null}
-                  {currentuser && currentuser.role === "admin" ? (
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() => handleDoctorDelete(doc._id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  ) : null}
-                </CardActions>
-              </Card>
+                      {/* Doctor Image */}
+                      <CardMedia
+                        component="img"
+                        image={
+                          API_URL +
+                          (doc.image ? doc.image : "uploads/default_image.png")
+                        }
+                        sx={{
+                          width: 140,
+                          height: 140,
+                          borderRadius: 2,
+                          objectFit: "cover",
+                        }}
+                      />
+
+                      {/* Doctor Info */}
+                      <CardContent sx={{ flex: 1, textAlign: "left", p: 0 }}>
+                        <Typography
+                          gutterBottom
+                          variant="h6"
+                          sx={{ fontWeight: "bold" }}
+                        >
+                          {doc.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            mb: 2,
+                            overflow: "hidden",
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 3,
+                          }}
+                        >
+                          {doc.biography || "No Biography"}
+                        </Typography>
+
+                        {/* Buttons */}
+                        <Stack
+                          direction="row"
+                          spacing={2}
+                          alignItems="center"
+                          justifyContent="flex-start"
+                        >
+                          {/* View Profile */}
+                          <Button
+                            variant="contained"
+                            size="small"
+                            to={`/doctor/${doc._id}`}
+                            component={Link}
+                            className={`expand-button ${
+                              expanded === `profile-${doc._id}`
+                                ? "expanded"
+                                : ""
+                            }`}
+                            onMouseEnter={() =>
+                              setExpanded(`profile-${doc._id}`)
+                            }
+                            onMouseLeave={() => setExpanded(null)}
+                          >
+                            <PersonIcon className="button-icon" />
+                            <span className="button-text">View Profile</span>
+                          </Button>
+
+                          {/* Book Appointment (patients only) */}
+                          {currentuser?.role === "patient" && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              color="secondary"
+                              to={`/book-appointment/${doc._id}`}
+                              component={Link}
+                              className={`expand-button ${
+                                expanded === `appointment-${doc._id}`
+                                  ? "expanded"
+                                  : ""
+                              }`}
+                              onMouseEnter={() =>
+                                setExpanded(`appointment-${doc._id}`)
+                              }
+                              onMouseLeave={() => setExpanded(null)}
+                            >
+                              <CalendarMonthIcon className="button-icon" />
+                              <span className="button-text">
+                                Book Appointment
+                              </span>
+                            </Button>
+                          )}
+
+                          {/* Delete (admins only) */}
+                          {currentuser?.role === "admin" && (
+                            <Tooltip title="Delete doctor">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleDoctorDelete(doc._id)}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))
+              )}
             </Grid>
-          ))}
+          </Grid>
         </Grid>
       </Container>
     </>

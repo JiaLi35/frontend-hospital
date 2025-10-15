@@ -8,6 +8,8 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PersonIcon from "@mui/icons-material/Person";
 import { Link } from "react-router";
 import { useCookies } from "react-cookie";
 import { getDoctor } from "../api/api_doctors";
@@ -20,6 +22,7 @@ export default function Header() {
   const { currentuser } = cookies;
   const [patientId, setPatientId] = useState("");
   const [doctorId, setDoctorId] = useState("");
+  const [image, setImage] = useState(null);
 
   // app bar
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -44,6 +47,7 @@ export default function Header() {
     if (currentuser && currentuser.role === "doctor") {
       getDoctor(currentuser._id).then((doctorData) => {
         setDoctorId(doctorData ? doctorData._id : "");
+        setImage(doctorData ? doctorData.image : null);
       });
     } else if (currentuser && currentuser.role === "patient") {
       getPatient(currentuser._id).then((patientId) => {
@@ -53,7 +57,7 @@ export default function Header() {
   }, [currentuser]);
 
   return (
-    <AppBar position="sticky" sx={{ mb: "20px" }}>
+    <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -120,7 +124,7 @@ export default function Header() {
                 Find a Doctor
               </MenuItem>
               {currentuser && currentuser.role === "admin" ? (
-                <>
+                <Box>
                   <MenuItem to="/add-doctor" component={Link} sx={{ m: 1 }}>
                     Add a Doctor
                   </MenuItem>
@@ -134,43 +138,25 @@ export default function Header() {
                   >
                     Manage Appointments
                   </MenuItem>
-                </>
+                </Box>
               ) : null}
               {currentuser && currentuser.role === "doctor" ? (
-                <>
-                  <MenuItem
-                    to={`/profile/${doctorId}`}
-                    component={Link}
-                    sx={{ m: 1 }}
-                  >
-                    Manage Profile
-                  </MenuItem>
-                  <MenuItem
-                    to={`/manage-appointments/${doctorId}`}
-                    component={Link}
-                    sx={{ m: 1 }}
-                  >
-                    Manage Appointments
-                  </MenuItem>
-                </>
+                <MenuItem
+                  to={`/manage-appointments/${doctorId}`}
+                  component={Link}
+                  sx={{ m: 1 }}
+                >
+                  Manage Appointments
+                </MenuItem>
               ) : null}
               {currentuser && currentuser.role === "patient" ? (
-                <>
-                  <MenuItem
-                    to={`/profile/${patientId}`}
-                    component={Link}
-                    sx={{ m: 1 }}
-                  >
-                    Manage Profile
-                  </MenuItem>
-                  <MenuItem
-                    to={`/manage-appointments/${patientId}`}
-                    component={Link}
-                    sx={{ m: 1 }}
-                  >
-                    Manage Appointments
-                  </MenuItem>
-                </>
+                <MenuItem
+                  to={`/manage-appointments/${patientId}`}
+                  component={Link}
+                  sx={{ m: 1 }}
+                >
+                  Manage Appointments
+                </MenuItem>
               ) : null}
             </Menu>
           </Box>
@@ -247,15 +233,6 @@ export default function Header() {
                 <Button
                   variant={"text"}
                   color="dark"
-                  to={`/profile/${doctorId}`}
-                  component={Link}
-                  sx={{ m: 1 }}
-                >
-                  Manage Profile
-                </Button>
-                <Button
-                  variant={"text"}
-                  color="dark"
                   to={`/manage-appointments/${doctorId}`}
                   component={Link}
                   sx={{ m: 1 }}
@@ -269,15 +246,6 @@ export default function Header() {
                 <Button
                   variant={"text"}
                   color="dark"
-                  to={`/profile/${patientId}`}
-                  component={Link}
-                  sx={{ m: 1 }}
-                >
-                  Manage Profile
-                </Button>
-                <Button
-                  variant={"text"}
-                  color="dark"
                   to={`/manage-appointments/${patientId}`}
                   component={Link}
                   sx={{ m: 1 }}
@@ -288,12 +256,15 @@ export default function Header() {
             ) : null}
           </Box>
           {currentuser ? (
-            <Box sx={{ flexGrow: 0 }}>
+            <Box sx={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <Typography>{currentuser.name}</Typography>
               <Tooltip title="Open profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
                     alt="User Avatar"
-                    src={API_URL + "uploads/default-avatar.jpg"}
+                    src={
+                      API_URL + (image ? image : "uploads/default-avatar.jpg")
+                    }
                   />
                 </IconButton>
               </Tooltip>
@@ -314,6 +285,17 @@ export default function Header() {
                 onClose={handleCloseUserMenu}
               >
                 <MenuItem
+                  to={
+                    currentuser.role === "doctor"
+                      ? `/profile/${doctorId}`
+                      : `/profile/${patientId}`
+                  }
+                  component={Link}
+                >
+                  <PersonIcon fontSize="small" sx={{ marginRight: "10px" }} />
+                  <Typography>Manage Profile</Typography>
+                </MenuItem>
+                <MenuItem
                   onClick={() => {
                     // remove the cookie
                     removeCookie("currentuser");
@@ -321,6 +303,7 @@ export default function Header() {
                     window.location.href = "/login";
                   }}
                 >
+                  <LogoutIcon fontSize="small" sx={{ marginRight: "10px" }} />
                   <Typography>Logout</Typography>
                 </MenuItem>
               </Menu>
