@@ -131,7 +131,7 @@ export default function PatientUpdateProfile() {
                 onInput={(e) => {
                   e.target.value = e.target.value
                     .replace(/\D/g, "") // remove non-digits
-                    .slice(0, 10); // limit to 12 digits
+                    .slice(0, 11); // limit to 11 digits
                 }}
               />
             </Box>

@@ -43,7 +43,7 @@ export default function SignUpPage() {
     } else if (nric.length !== 12) {
       // if nric no. is not a certain length, throw an error to input a valid value
       toast.error("Please enter a valid IC number.");
-    } else if (phoneNumber.length !== 10) {
+    } else if (phoneNumber.length !== 11) {
       // if phone number is not a certain length, throw an error to input a valid value
       toast.error("Please enter a valid phone number.");
     } else {
