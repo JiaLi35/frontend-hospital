@@ -66,7 +66,7 @@ export default function DoctorFind() {
   const handleDoctorDelete = async (id) => {
     Swal.fire({
       title: "Are you sure you want to delete this doctor?",
-      text: "You won't be able to revert this",
+      text: "You won't be able to revert this. All appointments linked to this doctor will be deleted.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",

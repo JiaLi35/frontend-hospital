@@ -21,7 +21,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import BlockIcon from "@mui/icons-material/Block";
 import DoneIcon from "@mui/icons-material/Done";
 import Header from "./Header";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import {
   cancelAppointment,
   completeAppointment,
@@ -42,7 +42,8 @@ export default function DoctorAppointmentPage() {
   const [cookies] = useCookies(["currentuser"]);
   const { currentuser = {} } = cookies;
   const { token = "" } = currentuser;
-  const [status, setStatus] = useState("checked-in");
+  const [status, setStatus] = useState("checked-in&status=scheduled");
+  const [sort, setSort] = useState("asc");
   const [appointments, setAppointments] = useState([]);
   const isMobile = useMediaQuery("(max-width:875px)");
 
@@ -168,32 +169,62 @@ export default function DoctorAppointmentPage() {
     };
   }, [appointments, token]);
 
+  const sortedAppointments = useMemo(() => {
+    return [...appointments].sort((a, b) => {
+      const dateA = dayjs(a.dateTime);
+      const dateB = dayjs(b.dateTime);
+      return sort === "asc" ? dateA - dateB : dateB - dateA;
+    });
+  }, [appointments, sort]);
+
   return (
     <>
       <Box sx={{ backgroundColor: "rgb(251, 251, 251)" }}>
         <Header />
         <Container sx={{ mt: "40px", mb: "20px" }}>
-          <FormControl sx={{ mb: "10px" }}>
-            <InputLabel id="demo-simple-select-label">Status</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={status}
-              label="Status"
-              onChange={(event) => {
-                setStatus(event.target.value);
-              }}
-            >
-              <MenuItem value="all">All Status</MenuItem>
-              <MenuItem value="checked-in&status=scheduled">
-                Scheduled & Check In
-              </MenuItem>
-              <MenuItem value="checked-in">Checked-In</MenuItem>
-              <MenuItem value="scheduled">Scheduled</MenuItem>
-              <MenuItem value="completed">Completed</MenuItem>
-              <MenuItem value="cancelled">Cancelled</MenuItem>
-            </Select>
-          </FormControl>
+          <Box sx={{ display: "flex", gap: "10px", mb: "10px" }}>
+            <FormControl sx={{ mb: "10px" }}>
+              <InputLabel id="demo-simple-select-label">Status</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={status}
+                label="Status"
+                onChange={(event) => {
+                  setStatus(event.target.value);
+                }}
+              >
+                <MenuItem value="all">All Status</MenuItem>
+                <MenuItem value="checked-in&status=scheduled">
+                  Scheduled & Check In
+                </MenuItem>
+                <MenuItem value="checked-in">Checked-In</MenuItem>
+                <MenuItem value="scheduled">Scheduled</MenuItem>
+                <MenuItem value="completed">Completed</MenuItem>
+                <MenuItem value="cancelled">Cancelled</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel
+                id="demo-simple-select-label"
+                sx={{ backgroundColor: "#FFF" }}
+              >
+                Sort by date:
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={sort}
+                label="Status"
+                onChange={(event) => {
+                  setSort(event.target.value);
+                }}
+              >
+                <MenuItem value="asc">Ascending</MenuItem>
+                <MenuItem value="desc">Descending</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
 
           {/* DESKTOP/TABLET VIEW */}
           {!isMobile ? (
@@ -210,7 +241,7 @@ export default function DoctorAppointmentPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {appointments.map((appointment, index) => {
+                  {sortedAppointments.map((appointment, index) => {
                     const localDateAndTime = localDateTime(
                       appointment.dateTime
                     );
@@ -268,6 +299,19 @@ export default function DoctorAppointmentPage() {
                         </TableCell>
                         <TableCell>
                           <Box display={"flex"} gap={1}>
+                            {appointment.status === "checked-in" && (
+                              <Tooltip title="Complete Appointment">
+                                <Button
+                                  color="success"
+                                  variant="contained"
+                                  onClick={() =>
+                                    handleCompleteAppointment(appointment._id)
+                                  }
+                                >
+                                  <DoneIcon />
+                                </Button>
+                              </Tooltip>
+                            )}
                             <Tooltip
                               title={
                                 appointment.status === "cancelled" ||
@@ -290,19 +334,6 @@ export default function DoctorAppointmentPage() {
                                 )}
                               </Button>
                             </Tooltip>
-                            {appointment.status === "checked-in" && (
-                              <Tooltip title="Complete Appointment">
-                                <Button
-                                  color="success"
-                                  variant="contained"
-                                  onClick={() =>
-                                    handleCompleteAppointment(appointment._id)
-                                  }
-                                >
-                                  <DoneIcon />
-                                </Button>
-                              </Tooltip>
-                            )}
                             {(appointment.status === "scheduled" ||
                               appointment.status === "checked-in") && (
                               <Tooltip title="Cancel Appointment">
@@ -331,7 +362,7 @@ export default function DoctorAppointmentPage() {
             <Box
               sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}
             >
-              {appointments.map((appointment, index) => {
+              {sortedAppointments.map((appointment, index) => {
                 const localDateAndTime = localDateTime(appointment.dateTime);
 
                 if (
@@ -389,6 +420,19 @@ export default function DoctorAppointmentPage() {
                       gap={1}
                       mt={1}
                     >
+                      {appointment.status === "checked-in" && (
+                        <Tooltip title="Complete Appointment">
+                          <Button
+                            color="success"
+                            variant="contained"
+                            onClick={() =>
+                              handleCompleteAppointment(appointment._id)
+                            }
+                          >
+                            <DoneIcon />
+                          </Button>
+                        </Tooltip>
+                      )}
                       <Tooltip
                         title={
                           appointment.status === "cancelled" ||
@@ -412,19 +456,6 @@ export default function DoctorAppointmentPage() {
                           )}
                         </Button>
                       </Tooltip>
-                      {appointment.status === "checked-in" && (
-                        <Tooltip title="Complete Appointment">
-                          <Button
-                            color="success"
-                            variant="contained"
-                            onClick={() =>
-                              handleCompleteAppointment(appointment._id)
-                            }
-                          >
-                            <DoneIcon />
-                          </Button>
-                        </Tooltip>
-                      )}
                       {(appointment.status === "scheduled" ||
                         appointment.status === "checked-in") && (
                         <Tooltip title="Cancel Appointment">

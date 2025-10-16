@@ -21,7 +21,7 @@ import BlockIcon from "@mui/icons-material/Block";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Header from "./Header";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import {
   getAppointmentsByPatientId,
   cancelAppointment,
@@ -43,7 +43,7 @@ export default function PatientAppointmentPage() {
   const { token = "" } = currentuser;
   const navigate = useNavigate();
   const [status, setStatus] = useState("checked-in&status=scheduled");
-  // const [sort, setSort] = useState("1");
+  const [sort, setSort] = useState("asc");
   const [appointments, setAppointments] = useState([]);
   const isMobile = useMediaQuery("(max-width:890px)");
 
@@ -83,6 +83,7 @@ export default function PatientAppointmentPage() {
     });
   };
 
+  /* time functions */
   const localDateTime = (date) => {
     return dayjs(date).local().format("DD MMM YYYY, hh:mm A");
   };
@@ -174,6 +175,14 @@ export default function PatientAppointmentPage() {
     };
   }, [appointments, token]);
 
+  const sortedAppointments = useMemo(() => {
+    return [...appointments].sort((a, b) => {
+      const dateA = dayjs(a.dateTime);
+      const dateB = dayjs(b.dateTime);
+      return sort === "asc" ? dateA - dateB : dateB - dateA;
+    });
+  }, [appointments, sort]);
+
   return (
     <>
       <Box sx={{ backgroundColor: "rgb(251, 251, 251)" }}>
@@ -207,7 +216,7 @@ export default function PatientAppointmentPage() {
                 <MenuItem value="cancelled">Cancelled</MenuItem>
               </Select>
             </FormControl>
-            {/* <FormControl >
+            <FormControl>
               <InputLabel
                 id="demo-simple-select-label"
                 sx={{ backgroundColor: "#FFF" }}
@@ -223,10 +232,10 @@ export default function PatientAppointmentPage() {
                   setSort(event.target.value);
                 }}
               >
-                <MenuItem value="1">Ascending</MenuItem>
-                <MenuItem value="-1">Descending</MenuItem>
+                <MenuItem value="asc">Ascending</MenuItem>
+                <MenuItem value="desc">Descending</MenuItem>
               </Select>
-            </FormControl> */}
+            </FormControl>
           </Box>
 
           {/* DESKTOP/TABLET VIEW */}
@@ -244,7 +253,7 @@ export default function PatientAppointmentPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {appointments.map((appointment, index) => {
+                  {sortedAppointments.map((appointment, index) => {
                     const localDateAndTime = localDateTime(
                       appointment.dateTime
                     );
@@ -368,7 +377,7 @@ export default function PatientAppointmentPage() {
             <Box
               sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}
             >
-              {appointments.map((appointment, index) => {
+              {sortedAppointments.map((appointment, index) => {
                 const localDateAndTime = localDateTime(appointment.dateTime);
                 const todayDate = isToday(appointment.dateTime);
                 if (
