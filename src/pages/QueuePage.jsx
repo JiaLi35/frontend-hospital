@@ -11,6 +11,7 @@ import {
   CardContent,
   Grid,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { toast } from "sonner";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -127,168 +128,183 @@ export default function QueuePage() {
 
   return (
     <>
-      <Header />
-      <Container maxWidth="md" sx={{ mt: 6, mb: 4 }}>
-        <Box
-          sx={{
-            display: "flex",
-            gap: { xs: "10px", sm: "200px", md: "275px" },
-          }}
-        >
-          {/* Page Title */}
-          <Box>
-            <Typography variant="h4" fontWeight="bold" gutterBottom>
-              Check-In Appointment
-            </Typography>
+      <Box sx={{ backgroundColor: "rgb(251, 251, 251)" }}>
+        <Header />
+        <Container maxWidth="md" sx={{ mt: 6, mb: 4 }}>
+          <Button
+            sx={{ marginBottom: "20px" }}
+            onClick={() => {
+              navigate(`/manage-appointments/${patientId}`);
+            }}
+          >
+            <ArrowBackIcon />
+            Go Back
+          </Button>
+          <Box
+            sx={{
+              display: "flex",
+              gap: { xs: "10px", sm: "200px", md: "275px" },
+            }}
+          >
+            {/* Page Title */}
+            <Box>
+              <Typography variant="h4" fontWeight="bold" gutterBottom>
+                Check-In Appointment
+              </Typography>
 
-            <Typography variant="subtitle1" color="text.secondary" mb={3}>
-              {patientNumber
-                ? "Thank you for checking in. Please wait for your turn."
-                : "Confirm your details below to check in for your appointment."}
-            </Typography>
+              <Typography variant="subtitle1" color="text.secondary" mb={3}>
+                {patientNumber
+                  ? "Thank you for checking in. Please wait for your turn."
+                  : "Confirm your details below to check in for your appointment."}
+              </Typography>
+            </Box>
+
+            {/* Action Buttons */}
+            {!patientNumber ? (
+              <Box textAlign="center" mt={4}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="large"
+                  onClick={handleCheckIn}
+                  sx={{ borderRadius: 2, px: 4, py: 1.2 }}
+                >
+                  Check In
+                </Button>
+              </Box>
+            ) : null}
           </Box>
 
-          {/* Action Buttons */}
-          {!patientNumber ? (
-            <Box textAlign="center" mt={4}>
-              <Button
-                variant="contained"
-                color="success"
-                size="large"
-                onClick={handleCheckIn}
-                sx={{ borderRadius: 2, px: 4, py: 1.2 }}
+          {/* Appointment Info Card */}
+          <Card
+            elevation={4}
+            sx={{
+              borderRadius: 3,
+              p: 3,
+              mb: 4,
+              backgroundColor: "background.paper",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h6" gutterBottom textAlign="center" mb={3}>
+                Appointment Details
+              </Typography>
+
+              <Grid container spacing={3}>
+                <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    textAlign="center"
+                  >
+                    Date
+                  </Typography>
+                  <Typography variant="body1" textAlign="center">
+                    {date}
+                  </Typography>
+                </Grid>
+
+                <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    textAlign="center"
+                  >
+                    Doctor
+                  </Typography>
+                  <Typography variant="body1" textAlign="center">
+                    {doctorName}
+                  </Typography>
+                </Grid>
+
+                <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    textAlign="center"
+                  >
+                    Specialty
+                  </Typography>
+                  <Typography variant="body1" textAlign="center">
+                    {specialty}
+                  </Typography>
+                </Grid>
+
+                <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    textAlign="center"
+                  >
+                    Your Name (Patient)
+                  </Typography>
+                  <Typography variant="body1" textAlign="center">
+                    {patientName}
+                  </Typography>
+                </Grid>
+
+                <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    textAlign="center"
+                  >
+                    Email
+                  </Typography>
+                  <Typography variant="body1" textAlign="center">
+                    {email}
+                  </Typography>
+                </Grid>
+
+                <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    textAlign="center"
+                  >
+                    Phone Number
+                  </Typography>
+                  <Typography variant="body1" textAlign="center">
+                    {phoneNumber}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
+          {/* Queue Info Section */}
+          <Card
+            elevation={2}
+            sx={{
+              borderRadius: 3,
+              p: 3,
+              backgroundColor: "background.default",
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Queue Status
+            </Typography>
+            <Typography variant="body1" mb={1}>
+              Current queue number:{" "}
+              <strong>{currentNumber || "No queue for today."}</strong>
+            </Typography>
+            {patientNumber && (
+              <Typography
+                variant="body1"
+                color="success.main"
+                fontWeight="bold"
               >
-                Check In
-              </Button>
-            </Box>
-          ) : null}
-        </Box>
-
-        {/* Appointment Info Card */}
-        <Card
-          elevation={4}
-          sx={{
-            borderRadius: 3,
-            p: 3,
-            mb: 4,
-            backgroundColor: "background.paper",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <CardContent>
-            <Typography variant="h6" gutterBottom textAlign="center" mb={3}>
-              Appointment Details
-            </Typography>
-
-            <Grid container spacing={3}>
-              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  textAlign="center"
-                >
-                  Date
-                </Typography>
-                <Typography variant="body1" textAlign="center">
-                  {date}
-                </Typography>
-              </Grid>
-
-              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  textAlign="center"
-                >
-                  Doctor
-                </Typography>
-                <Typography variant="body1" textAlign="center">
-                  {doctorName}
-                </Typography>
-              </Grid>
-
-              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  textAlign="center"
-                >
-                  Specialty
-                </Typography>
-                <Typography variant="body1" textAlign="center">
-                  {specialty}
-                </Typography>
-              </Grid>
-
-              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  textAlign="center"
-                >
-                  Your Name (Patient)
-                </Typography>
-                <Typography variant="body1" textAlign="center">
-                  {patientName}
-                </Typography>
-              </Grid>
-
-              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  textAlign="center"
-                >
-                  Email
-                </Typography>
-                <Typography variant="body1" textAlign="center">
-                  {email}
-                </Typography>
-              </Grid>
-
-              <Grid item size={{ xs: 12, sm: 6, md: 4 }}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  textAlign="center"
-                >
-                  Phone Number
-                </Typography>
-                <Typography variant="body1" textAlign="center">
-                  {phoneNumber}
-                </Typography>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-
-        {/* Queue Info Section */}
-        <Card
-          elevation={2}
-          sx={{
-            borderRadius: 3,
-            p: 3,
-            backgroundColor: "background.default",
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            Queue Status
-          </Typography>
-          <Typography variant="body1" mb={1}>
-            Current queue number:{" "}
-            <strong>{currentNumber || "No queue for today."}</strong>
-          </Typography>
-          {patientNumber && (
-            <Typography variant="body1" color="success.main" fontWeight="bold">
-              Your queue number: {patientNumber}
-            </Typography>
-          )}
-        </Card>
-      </Container>
+                Your queue number: {patientNumber}
+              </Typography>
+            )}
+          </Card>
+        </Container>
+      </Box>
     </>
   );
 }

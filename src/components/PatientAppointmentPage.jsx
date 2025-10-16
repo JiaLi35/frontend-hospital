@@ -26,7 +26,7 @@ import {
   getAppointmentsByPatientId,
   cancelAppointment,
 } from "../api/api_appointments";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { useCookies } from "react-cookie";
 import { toast } from "sonner";
 import dayjs from "dayjs";
@@ -41,25 +41,21 @@ export default function PatientAppointmentPage() {
   const [cookies] = useCookies(["currentuser"]);
   const { currentuser = {} } = cookies;
   const { token = "" } = currentuser;
+  const navigate = useNavigate();
   const [status, setStatus] = useState("checked-in&status=scheduled");
+  // const [sort, setSort] = useState("1");
   const [appointments, setAppointments] = useState([]);
   const isMobile = useMediaQuery("(max-width:890px)");
 
   useEffect(() => {
     getAppointmentsByPatientId(id, status)
       .then((appointmentData) => {
-        console.log(appointmentData);
         setAppointments(appointmentData);
       })
       .catch((error) => {
         console.log(error);
         toast.error(error?.response?.data?.message);
       });
-
-    if (!currentuser || currentuser.role !== "patient") {
-      navigate("/");
-      toast.error("Access denied");
-    }
   }, [status]);
 
   const handleCancelAppointment = async (app_id) => {
@@ -180,271 +176,329 @@ export default function PatientAppointmentPage() {
 
   return (
     <>
-      <Header />
-      <Container maxWidth="lg" sx={{ marginTop: 4, marginBottom: 4 }}>
-        <FormControl sx={{ mb: "10px" }}>
-          <InputLabel id="demo-simple-select-label">Status</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={status}
-            label="Status"
-            onChange={(event) => {
-              setStatus(event.target.value);
-            }}
-          >
-            <MenuItem value="all">All Status</MenuItem>
-            <MenuItem value="checked-in&status=scheduled">
-              Scheduled & Check In
-            </MenuItem>
-            <MenuItem value="checked-in">Checked-In</MenuItem>
-            <MenuItem value="scheduled">Scheduled</MenuItem>
-            <MenuItem value="completed">Completed</MenuItem>
-            <MenuItem value="cancelled">Cancelled</MenuItem>
-          </Select>
-        </FormControl>
-        {/* DESKTOP/TABLET VIEW */}
-        {!isMobile ? (
-          <Paper elevation={1} sx={{ marginY: 3, overflowX: "auto" }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>No.</TableCell>
-                  <TableCell>Doctor Name</TableCell>
-                  <TableCell>Specialty</TableCell>
-                  <TableCell>Date & Time</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell sx={{ textAlign: "right" }}>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {appointments.map((appointment, index) => {
-                  const localDateAndTime = localDateTime(appointment.dateTime);
-                  const todayDate = isToday(appointment.dateTime);
+      <Box sx={{ backgroundColor: "rgb(251, 251, 251)" }}>
+        <Header />
+        <Container
+          maxWidth="lg"
+          sx={{
+            marginTop: 4,
+            marginBottom: 4,
+          }}
+        >
+          <Box sx={{ display: "flex", gap: "10px", mb: "10px" }}>
+            <FormControl>
+              <InputLabel id="demo-simple-select-label">Status</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={status}
+                label="Status"
+                onChange={(event) => {
+                  setStatus(event.target.value);
+                }}
+              >
+                <MenuItem value="all">All Status</MenuItem>
+                <MenuItem value="checked-in&status=scheduled">
+                  Scheduled & Check In
+                </MenuItem>
+                <MenuItem value="checked-in">Checked-In</MenuItem>
+                <MenuItem value="scheduled">Scheduled</MenuItem>
+                <MenuItem value="completed">Completed</MenuItem>
+                <MenuItem value="cancelled">Cancelled</MenuItem>
+              </Select>
+            </FormControl>
+            {/* <FormControl >
+              <InputLabel
+                id="demo-simple-select-label"
+                sx={{ backgroundColor: "#FFF" }}
+              >
+                Sort by date:
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={sort}
+                label="Status"
+                onChange={(event) => {
+                  setSort(event.target.value);
+                }}
+              >
+                <MenuItem value="1">Ascending</MenuItem>
+                <MenuItem value="-1">Descending</MenuItem>
+              </Select>
+            </FormControl> */}
+          </Box>
 
-                  return (
-                    <TableRow key={appointment._id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell sx={{ maxWidth: "200px" }}>
-                        <Typography
-                          sx={{
-                            whiteSpace: "normal", // allow wrapping
-                            overflowWrap: "break-word", // break long words if necessary
-                            wordBreak: "break-word", // additional safety for long strings
-                          }}
-                        >
-                          {appointment.doctorId.name}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ maxWidth: "200px" }}>
-                        <Typography
-                          sx={{
-                            whiteSpace: "normal", // allow wrapping
-                            overflowWrap: "break-word", // break long words if necessary
-                            wordBreak: "break-word", // additional safety for long strings
-                          }}
-                        >
-                          {appointment.doctorId.specialty.specialty}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>{localDateAndTime}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          textTransform={"capitalize"}
-                          color={
-                            appointment.status === "cancelled"
-                              ? "error.main"
-                              : appointment.status === "completed"
-                              ? "success.main"
-                              : "text.primary"
-                          }
-                        >
-                          {appointment.status}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Box textAlign={"right"}>
-                          {todayDate &&
-                            (appointment.status === "scheduled" ||
+          {/* DESKTOP/TABLET VIEW */}
+          {!isMobile ? (
+            <Paper elevation={1} sx={{ marginY: 3, overflowX: "auto" }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>No.</TableCell>
+                    <TableCell>Doctor Name</TableCell>
+                    <TableCell>Specialty</TableCell>
+                    <TableCell>Date & Time</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell sx={{ textAlign: "right" }}>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {appointments.map((appointment, index) => {
+                    const localDateAndTime = localDateTime(
+                      appointment.dateTime
+                    );
+                    const todayDate = isToday(appointment.dateTime);
+
+                    if (
+                      !currentuser ||
+                      currentuser.role !== "patient" ||
+                      currentuser._id !== appointment.patientId.user_id
+                    ) {
+                      navigate("/");
+                      toast.error("Access denied");
+                    }
+
+                    return (
+                      <TableRow key={appointment._id}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell sx={{ maxWidth: "200px" }}>
+                          <Typography
+                            sx={{
+                              whiteSpace: "normal", // allow wrapping
+                              overflowWrap: "break-word", // break long words if necessary
+                              wordBreak: "break-word", // additional safety for long strings
+                            }}
+                          >
+                            {appointment.doctorId.name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={{ maxWidth: "200px" }}>
+                          <Typography
+                            sx={{
+                              whiteSpace: "normal", // allow wrapping
+                              overflowWrap: "break-word", // break long words if necessary
+                              wordBreak: "break-word", // additional safety for long strings
+                            }}
+                          >
+                            {appointment.doctorId.specialty.specialty}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography>{localDateAndTime}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography
+                            textTransform={"capitalize"}
+                            color={
+                              appointment.status === "cancelled"
+                                ? "error.main"
+                                : appointment.status === "completed"
+                                ? "success.main"
+                                : "text.primary"
+                            }
+                          >
+                            {appointment.status}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Box textAlign={"right"}>
+                            {todayDate &&
+                              (appointment.status === "scheduled" ||
+                                appointment.status === "checked-in") && (
+                                <Tooltip title="Check-In">
+                                  <Button
+                                    color="success"
+                                    variant="contained"
+                                    sx={{ marginRight: "10px" }}
+                                    to={`/queue/${appointment._id}`}
+                                    component={Link}
+                                  >
+                                    <AssignmentTurnedInIcon />
+                                  </Button>
+                                </Tooltip>
+                              )}
+                            <Tooltip
+                              title={
+                                appointment.status === "cancelled" ||
+                                appointment.status === "completed"
+                                  ? "View Appointment Details"
+                                  : "Reschedule Appointment"
+                              }
+                            >
+                              <Button
+                                color="primary"
+                                variant="contained"
+                                to={`/appointment/${appointment._id}`}
+                                component={Link}
+                              >
+                                {appointment.status === "cancelled" ||
+                                appointment.status === "completed" ? (
+                                  <VisibilityIcon />
+                                ) : (
+                                  <CalendarMonthIcon />
+                                )}
+                              </Button>
+                            </Tooltip>
+                            {(appointment.status === "scheduled" ||
                               appointment.status === "checked-in") && (
-                              <Tooltip title="Check-In">
+                              <Tooltip title="Cancel Appointment">
                                 <Button
-                                  color="success"
+                                  color="error"
                                   variant="contained"
-                                  sx={{ marginRight: "10px" }}
-                                  to={`/queue/${appointment._id}`}
-                                  component={Link}
+                                  sx={{ ml: 1 }}
+                                  onClick={() =>
+                                    handleCancelAppointment(appointment._id)
+                                  }
                                 >
-                                  <AssignmentTurnedInIcon />
+                                  <BlockIcon />
                                 </Button>
                               </Tooltip>
                             )}
-                          <Tooltip
-                            title={
-                              appointment.status === "cancelled" ||
-                              appointment.status === "completed"
-                                ? "View Appointment Details"
-                                : "Reschedule Appointment"
-                            }
-                          >
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Paper>
+          ) : (
+            // MOBILE VIEW — CARD STYLE
+            <Box
+              sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}
+            >
+              {appointments.map((appointment, index) => {
+                const localDateAndTime = localDateTime(appointment.dateTime);
+                const todayDate = isToday(appointment.dateTime);
+                if (
+                  !currentuser ||
+                  currentuser.role !== "patient" ||
+                  currentuser._id !== appointment.patientId.user_id
+                ) {
+                  navigate("/");
+                  toast.error("Access denied");
+                }
+
+                return (
+                  <Box
+                    key={appointment._id}
+                    sx={{
+                      p: 2,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 1,
+                      borderRadius: 2,
+                      boxShadow: 1,
+                    }}
+                  >
+                    <Box display={"flex"} gap={1}>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {index + 1}.
+                      </Typography>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {appointment.doctorId.name}
+                      </Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Specialty: {appointment.doctorId.specialty.specialty}
+                    </Typography>
+                    <Typography variant="body2">
+                      Date & Time: {localDateAndTime}
+                    </Typography>
+                    <Typography
+                      textTransform={"capitalize"}
+                      variant="body2"
+                      color={
+                        appointment.status === "cancelled"
+                          ? "error.main"
+                          : appointment.status === "completed"
+                          ? "success.main"
+                          : "text.primary"
+                      }
+                    >
+                      Status: {appointment.status}
+                    </Typography>
+
+                    <Box
+                      display="flex"
+                      justifyContent="flex-end"
+                      gap={1}
+                      mt={1}
+                    >
+                      {todayDate &&
+                        (appointment.status === "scheduled" ||
+                          appointment.status === "checked-in") && (
+                          <Tooltip title="Check-In">
                             <Button
-                              color="primary"
+                              color="success"
                               variant="contained"
-                              to={`/appointment/${appointment._id}`}
+                              sx={{ marginRight: "10px" }}
+                              to={`/queue/${appointment._id}`}
                               component={Link}
                             >
-                              {appointment.status === "cancelled" ||
-                              appointment.status === "completed" ? (
-                                <VisibilityIcon />
-                              ) : (
-                                <CalendarMonthIcon />
-                              )}
+                              <AssignmentTurnedInIcon />
                             </Button>
                           </Tooltip>
-                          {(appointment.status === "scheduled" ||
-                            appointment.status === "checked-in") && (
-                            <Tooltip title="Cancel Appointment">
-                              <Button
-                                color="error"
-                                variant="contained"
-                                sx={{ ml: 1 }}
-                                onClick={() =>
-                                  handleCancelAppointment(appointment._id)
-                                }
-                              >
-                                <BlockIcon />
-                              </Button>
-                            </Tooltip>
+                        )}
+                      <Tooltip
+                        title={
+                          appointment.status === "cancelled" ||
+                          appointment.status === "completed"
+                            ? "View Appointment Details"
+                            : "Reschedule Appointment"
+                        }
+                      >
+                        <Button
+                          to={`/appointment/${appointment._id}`}
+                          component={Link}
+                          size="small"
+                          color="primary"
+                          variant="contained"
+                        >
+                          {appointment.status === "cancelled" ||
+                          appointment.status === "completed" ? (
+                            <VisibilityIcon fontSize="small" />
+                          ) : (
+                            <CalendarMonthIcon fontSize="small" />
                           )}
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </Paper>
-        ) : (
-          // MOBILE VIEW — CARD STYLE
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}>
-            {appointments.map((appointment, index) => {
-              const localDateAndTime = localDateTime(appointment.dateTime);
-              const todayDate = isToday(appointment.dateTime);
-              return (
-                <Box
-                  key={appointment._id}
-                  sx={{
-                    p: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 1,
-                    borderRadius: 2,
-                    boxShadow: 1,
-                  }}
-                >
-                  <Box display={"flex"} gap={1}>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      {index + 1}.
-                    </Typography>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      {appointment.doctorId.name}
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Specialty: {appointment.doctorId.specialty.specialty}
-                  </Typography>
-                  <Typography variant="body2">
-                    Date & Time: {localDateAndTime}
-                  </Typography>
-                  <Typography
-                    textTransform={"capitalize"}
-                    variant="body2"
-                    color={
-                      appointment.status === "cancelled"
-                        ? "error.main"
-                        : appointment.status === "completed"
-                        ? "success.main"
-                        : "text.primary"
-                    }
-                  >
-                    Status: {appointment.status}
-                  </Typography>
-
-                  <Box display="flex" justifyContent="flex-end" gap={1} mt={1}>
-                    {todayDate &&
-                      (appointment.status === "scheduled" ||
+                        </Button>
+                      </Tooltip>
+                      {(appointment.status === "scheduled" ||
                         appointment.status === "checked-in") && (
-                        <Tooltip title="Check-In">
+                        <Tooltip title="Cancel Appointment">
                           <Button
-                            color="success"
+                            color="error"
                             variant="contained"
-                            sx={{ marginRight: "10px" }}
-                            to={`/queue/${appointment._id}`}
-                            component={Link}
+                            size="small"
+                            onClick={() =>
+                              handleCancelAppointment(appointment._id)
+                            }
                           >
-                            <AssignmentTurnedInIcon />
+                            <BlockIcon fontSize="small" />
                           </Button>
                         </Tooltip>
                       )}
-                    <Tooltip
-                      title={
-                        appointment.status === "cancelled" ||
-                        appointment.status === "completed"
-                          ? "View Appointment Details"
-                          : "Reschedule Appointment"
-                      }
-                    >
-                      <Button
-                        to={`/appointment/${appointment._id}`}
-                        component={Link}
-                        size="small"
-                        color="primary"
-                        variant="contained"
-                      >
-                        {appointment.status === "cancelled" ||
-                        appointment.status === "completed" ? (
-                          <VisibilityIcon fontSize="small" />
-                        ) : (
-                          <CalendarMonthIcon fontSize="small" />
-                        )}
-                      </Button>
-                    </Tooltip>
-                    {(appointment.status === "scheduled" ||
-                      appointment.status === "checked-in") && (
-                      <Tooltip title="Cancel Appointment">
-                        <Button
-                          color="error"
-                          variant="contained"
-                          size="small"
-                          onClick={() =>
-                            handleCancelAppointment(appointment._id)
-                          }
-                        >
-                          <BlockIcon fontSize="small" />
-                        </Button>
-                      </Tooltip>
-                    )}
+                    </Box>
                   </Box>
-                </Box>
-              );
-            })}
-          </Box>
-        )}
-        {appointments.length === 0 ? (
-          <>
-            <Container>
-              <Typography>
-                No appointments found.
-                <Button to="/doctors" component={Link}>
-                  Book an appointment now
-                </Button>
-              </Typography>
-            </Container>
-          </>
-        ) : null}
-      </Container>
+                );
+              })}
+            </Box>
+          )}
+          {appointments.length === 0 ? (
+            <>
+              <Container>
+                <Typography>
+                  No appointments found.
+                  <Button to="/doctors" component={Link}>
+                    Book an appointment now
+                  </Button>
+                </Typography>
+              </Container>
+            </>
+          ) : null}
+        </Container>
+      </Box>
     </>
   );
 }

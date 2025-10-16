@@ -24,7 +24,14 @@ export default function PatientUpdateProfile() {
   useEffect(() => {
     getPatientById(id)
       .then((patientData) => {
-        console.log(patientData);
+        if (
+          !currentuser ||
+          currentuser.role !== "patient" ||
+          currentuser._id !== patientData.user_id
+        ) {
+          navigate("/");
+          toast.error("Access denied");
+        }
         // update the individual states with data
         setName(patientData ? patientData.name : "");
         setEmail(patientData ? patientData.email : "");
@@ -35,11 +42,6 @@ export default function PatientUpdateProfile() {
       .catch((error) => {
         console.log(error);
       });
-
-    if (!currentuser || currentuser.role !== "patient") {
-      navigate("/");
-      toast.error("Access denied");
-    }
   }, []);
 
   const handleUpdatePatient = async () => {
@@ -66,6 +68,7 @@ export default function PatientUpdateProfile() {
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column", // make it a column layout
+          backgroundColor: "rgb(251, 251, 251)",
         }}
       >
         <Header />

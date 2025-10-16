@@ -20,6 +20,8 @@ import { getDoctorById, updateDoctor } from "../api/api_doctors";
 import { getSpecialties } from "../api/api_specialties";
 import { uploadImage } from "../api/api_image";
 import { API_URL } from "../api/constants";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -52,6 +54,14 @@ export default function DoctorUpdateProfile() {
     getDoctorById(id)
       .then((doctorData) => {
         console.log(doctorData);
+        if (
+          !currentuser ||
+          currentuser.role !== "doctor" ||
+          currentuser._id !== doctorData.user_id
+        ) {
+          navigate("/");
+          toast.error("Access denied");
+        }
         // update the individual states with data
         setName(doctorData ? doctorData.name : "");
         setEmail(doctorData ? doctorData.email : "");
@@ -63,11 +73,6 @@ export default function DoctorUpdateProfile() {
       .catch((error) => {
         console.log(error);
       });
-
-    if (!currentuser || currentuser.role !== "doctor") {
-      navigate("/");
-      toast.error("Access denied");
-    }
   }, []);
 
   useEffect(() => {
@@ -89,6 +94,7 @@ export default function DoctorUpdateProfile() {
         setLoading(true);
         await updateDoctor(doctorId, biography.trim(), image, token);
         toast.success("Doctor Profile successfully updated.");
+        navigate(`/doctor/${id}`);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -105,6 +111,7 @@ export default function DoctorUpdateProfile() {
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column", // make it a column layout
+          backgroundColor: "rgb(251, 251, 251)",
         }}
       >
         <Header />

@@ -128,97 +128,99 @@ export default function SpecialtiesPage() {
 
   return (
     <>
-      <Header />
-      <Container maxWidth="lg" sx={{ py: 2 }}>
-        <Typography variant="h5" mb={2}>
-          Specialties
-        </Typography>
-        <Paper
-          elevation={3}
-          sx={{
-            p: "20px",
-            mb: 3,
-          }}
-        >
-          <Box
+      <Box sx={{ backgroundColor: "rgb(251, 251, 251)" }}>
+        <Header />
+        <Container maxWidth="lg" sx={{ py: 2 }}>
+          <Typography variant="h5" mb={2}>
+            Specialties
+          </Typography>
+          <Paper
+            elevation={3}
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: "10px",
-              mt: "10px",
+              p: "20px",
+              mb: 3,
             }}
           >
-            <TextField
-              fullWidth
-              label="Specialty Name"
-              variant="outlined"
-              value={specialty}
-              onChange={(event) => setSpecialty(event.target.value)}
-              onInput={(e) => {
-                e.target.value = e.target.value.slice(0, 40); // limit to 40 digits
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "10px",
+                mt: "10px",
               }}
-            />
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => handleAddNewSpecialty(specialty)}
             >
-              Add
-            </Button>
-          </Box>
-        </Paper>
+              <TextField
+                fullWidth
+                label="Specialty Name"
+                variant="outlined"
+                value={specialty}
+                onChange={(event) => setSpecialty(event.target.value)}
+                onInput={(e) => {
+                  e.target.value = e.target.value.slice(0, 40); // limit to 40 digits
+                }}
+              />
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={() => handleAddNewSpecialty(specialty)}
+              >
+                Add
+              </Button>
+            </Box>
+          </Paper>
 
-        <TableContainer component={Paper}>
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {specialties.map((spe) => (
-                <TableRow
-                  key={spe._id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="specialty">
-                    {spe.specialty}
-                  </TableCell>
-                  <TableCell>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        gap: "10px",
-                        justifyContent: "flex-end",
-                      }}
-                    >
-                      <Tooltip title="Edit Specialty">
-                        <Button
-                          color="primary"
-                          variant="contained"
-                          onClick={() => handleUpdateSpecialty(spe._id)}
-                        >
-                          <EditIcon />
-                        </Button>
-                      </Tooltip>
-                      <Tooltip title="Delete Specialty">
-                        <Button
-                          color="error"
-                          variant="contained"
-                          onClick={() => handleDeleteSpecialty(spe._id)}
-                        >
-                          <DeleteIcon />
-                        </Button>
-                      </Tooltip>
-                    </Box>
-                  </TableCell>
+          <TableContainer component={Paper}>
+            <Table aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Container>
+              </TableHead>
+              <TableBody>
+                {specialties.map((spe) => (
+                  <TableRow
+                    key={spe._id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="specialty">
+                      {spe.specialty}
+                    </TableCell>
+                    <TableCell>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: "10px",
+                          justifyContent: "flex-end",
+                        }}
+                      >
+                        <Tooltip title="Edit Specialty">
+                          <Button
+                            color="primary"
+                            variant="contained"
+                            onClick={() => handleUpdateSpecialty(spe._id)}
+                          >
+                            <EditIcon />
+                          </Button>
+                        </Tooltip>
+                        <Tooltip title="Delete Specialty">
+                          <Button
+                            color="error"
+                            variant="contained"
+                            onClick={() => handleDeleteSpecialty(spe._id)}
+                          >
+                            <DeleteIcon />
+                          </Button>
+                        </Tooltip>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Container>
+      </Box>
     </>
   );
 }

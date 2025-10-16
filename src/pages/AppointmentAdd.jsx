@@ -82,7 +82,6 @@ export default function AppointmentAdd() {
 
     getDoctorById(id)
       .then((doctorData) => {
-        console.log(doctorData);
         // update the individual states with data
         setDoctorName(doctorData ? doctorData.name : "");
         setSpecialty(doctorData ? doctorData.specialty._id : "");
@@ -94,7 +93,6 @@ export default function AppointmentAdd() {
 
     getPatient(_id)
       .then((patientData) => {
-        console.log(patientData);
         // update the individual states with data
         setPatientName(patientData ? patientData.name : "");
         setEmail(patientData ? patientData.email : "");
@@ -157,210 +155,217 @@ export default function AppointmentAdd() {
 
   return (
     <>
-      <Header />
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Container sx={{ marginY: "30px" }}>
-          <Button
-            sx={{ marginBottom: "20px" }}
-            onClick={() => {
-              navigate("/doctors");
-            }}
-          >
-            <ArrowBackIcon />
-            Go Back
-          </Button>
-          <Paper elevation={1} sx={{ padding: "20px" }}>
-            <Box mb={2} display={"flex"} gap={3}>
-              <TextField
-                label="Doctor Name"
-                placeholder="Name"
-                fullWidth
-                value={doctorName}
-                onChange={(event) => {
-                  setDoctorName(event.target.value);
-                }}
-                slotProps={{ htmlInput: { readOnly: true } }}
-              />
-              <FormControl sx={{ width: "100%" }}>
-                <InputLabel id="demo-simple-select-label">Specialty</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  value={specialty}
-                  label="Specialty"
+      <Box sx={{ backgroundColor: "rgb(251, 251, 251)" }}>
+        <Header />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Container sx={{ marginY: "30px" }}>
+            <Button
+              sx={{ marginBottom: "20px" }}
+              onClick={() => {
+                navigate("/doctors");
+              }}
+            >
+              <ArrowBackIcon />
+              Go Back
+            </Button>
+            <Paper elevation={1} sx={{ padding: "20px" }}>
+              <Box mb={2} display={"flex"} gap={3}>
+                <TextField
+                  label="Doctor Name"
+                  placeholder="Name"
+                  fullWidth
+                  value={doctorName}
                   onChange={(event) => {
-                    setSpecialty(event.target.value);
+                    setDoctorName(event.target.value);
                   }}
                   slotProps={{ htmlInput: { readOnly: true } }}
-                >
-                  {specialties.map((spe) => (
-                    <MenuItem value={spe._id} key={spe._id}>
-                      {spe.specialty}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-            <Grid container spacing={1} mb={2}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <DateCalendar
-                  views={["year", "month", "day"]}
-                  autoFocus
-                  disablePast
-                  minDate={today}
-                  maxDate={today.add(1, "year")}
-                  value={date}
-                  onChange={(newValue) => {
-                    setSelectedTime(null);
-                    setDate(newValue);
-                  }}
                 />
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Typography mb={2}>Select a time: </Typography>
-                {(() => {
-                  const availableTimeSlots = timeSlots.filter((time) => {
-                    // Only filter if the selected date is today
-                    if (date && date.isSame(today, "day")) {
-                      const now = dayjs();
-                      const slotTime = dayjs(time, "hh:mm A");
+                <FormControl sx={{ width: "100%" }}>
+                  <InputLabel id="demo-simple-select-label">
+                    Specialty
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    value={specialty}
+                    label="Specialty"
+                    onChange={(event) => {
+                      setSpecialty(event.target.value);
+                    }}
+                    slotProps={{ htmlInput: { readOnly: true } }}
+                  >
+                    {specialties.map((spe) => (
+                      <MenuItem value={spe._id} key={spe._id}>
+                        {spe.specialty}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+              <Grid container spacing={1} mb={2}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <DateCalendar
+                    views={["year", "month", "day"]}
+                    autoFocus
+                    disablePast
+                    minDate={today}
+                    maxDate={today.add(1, "year")}
+                    value={date}
+                    onChange={(newValue) => {
+                      setSelectedTime(null);
+                      setDate(newValue);
+                    }}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography mb={2}>Select a time: </Typography>
+                  {(() => {
+                    const availableTimeSlots = timeSlots.filter((time) => {
+                      // Only filter if the selected date is today
+                      if (date && date.isSame(today, "day")) {
+                        const now = dayjs();
+                        const slotTime = dayjs(time, "hh:mm A");
 
-                      // Compare by converting slotTime to today’s date + that time
-                      const slotDateTime = today
-                        .hour(slotTime.hour())
-                        .minute(slotTime.minute());
+                        // Compare by converting slotTime to today’s date + that time
+                        const slotDateTime = today
+                          .hour(slotTime.hour())
+                          .minute(slotTime.minute());
 
-                      return slotDateTime.isAfter(now);
-                    }
+                        return slotDateTime.isAfter(now);
+                      }
 
-                    // For future dates, show all slots
-                    return true;
-                  });
+                      // For future dates, show all slots
+                      return true;
+                    });
 
-                  // ✅ If no available slots, show message box
-                  if (availableTimeSlots.length === 0) {
-                    return (
-                      <Box
-                        sx={{
-                          p: 2,
-                          border: "1px dashed #ccc",
-                          borderRadius: 2,
-                          backgroundColor: "#fafafa",
-                          textAlign: "center",
-                        }}
-                      >
-                        <Typography color="text.secondary">
-                          No timeslots available for today. Please book another
-                          day.
-                        </Typography>
-                      </Box>
-                    );
-                  }
-                  return (
-                    <Grid container spacing={2}>
-                      {availableTimeSlots.map((time) => (
-                        <Grid
-                          item
-                          size={{ xs: 12, sm: 6, md: 4, lg: 4 }}
-                          key={time}
-                          gap={3}
+                    // ✅ If no available slots, show message box
+                    if (availableTimeSlots.length === 0) {
+                      return (
+                        <Box
+                          sx={{
+                            p: 2,
+                            border: "1px dashed #ccc",
+                            borderRadius: 2,
+                            backgroundColor: "#fafafa",
+                            textAlign: "center",
+                          }}
                         >
-                          <Button
-                            fullWidth
-                            variant={
-                              selectedTime === time ? "contained" : "outlined"
-                            }
-                            onClick={() => {
-                              setSelectedTime(time);
-                            }}
-                            sx={{
-                              textTransform: "none",
-                              fontWeight: "bold",
-                              borderColor: "#2196f3",
-                              color: selectedTime === time ? "#fff" : "#2196f3",
-                              backgroundColor:
-                                selectedTime === time
-                                  ? "#2196f3"
-                                  : "transparent",
-                              "&:hover": {
-                                backgroundColor:
-                                  selectedTime === time ? "#1976d2" : "#e3f2fd",
-                              },
-                            }}
+                          <Typography color="text.secondary">
+                            No timeslots available for today. Please book
+                            another day.
+                          </Typography>
+                        </Box>
+                      );
+                    }
+                    return (
+                      <Grid container spacing={2}>
+                        {availableTimeSlots.map((time) => (
+                          <Grid
+                            item
+                            size={{ xs: 12, sm: 6, md: 4, lg: 4 }}
+                            key={time}
+                            gap={3}
                           >
-                            {time}
-                          </Button>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  );
-                })()}
+                            <Button
+                              fullWidth
+                              variant={
+                                selectedTime === time ? "contained" : "outlined"
+                              }
+                              onClick={() => {
+                                setSelectedTime(time);
+                              }}
+                              sx={{
+                                textTransform: "none",
+                                fontWeight: "bold",
+                                borderColor: "#2196f3",
+                                color:
+                                  selectedTime === time ? "#fff" : "#2196f3",
+                                backgroundColor:
+                                  selectedTime === time
+                                    ? "#2196f3"
+                                    : "transparent",
+                                "&:hover": {
+                                  backgroundColor:
+                                    selectedTime === time
+                                      ? "#1976d2"
+                                      : "#e3f2fd",
+                                },
+                              }}
+                            >
+                              {time}
+                            </Button>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    );
+                  })()}
+                </Grid>
               </Grid>
-            </Grid>
-            <Box mb={2} display={"flex"} gap={3}>
-              <TextField
-                label="Patient Name"
-                placeholder="Name"
+              <Box mb={2} display={"flex"} gap={3}>
+                <TextField
+                  label="Patient Name"
+                  placeholder="Name"
+                  fullWidth
+                  value={patientName}
+                  onChange={(event) => {
+                    setPatientName(event.target.value);
+                  }}
+                  slotProps={{ htmlInput: { readOnly: true } }}
+                />
+                <TextField
+                  label="Email"
+                  placeholder="Email"
+                  fullWidth
+                  value={email}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                  }}
+                  slotProps={{ htmlInput: { readOnly: true } }}
+                />
+              </Box>
+              <Box mb={2} display={"flex"} gap={3}>
+                <TextField
+                  label="NRIC No."
+                  placeholder="NRIC No."
+                  fullWidth
+                  value={nric}
+                  onChange={(event) => {
+                    setNric(event.target.value);
+                  }}
+                  onInput={(e) => {
+                    e.target.value = e.target.value
+                      .replace(/\D/g, "") // remove non-digits
+                      .slice(0, 12); // limit to 12 digits
+                  }}
+                  slotProps={{ htmlInput: { readOnly: true } }}
+                />
+                <TextField
+                  label="Phone Number"
+                  placeholder="Phone Number"
+                  fullWidth
+                  value={phoneNumber}
+                  onChange={(event) => {
+                    setPhoneNumber(event.target.value);
+                  }}
+                  onInput={(e) => {
+                    e.target.value = e.target.value
+                      .replace(/\D/g, "") // remove non-digits
+                      .slice(0, 10); // limit to 10 digits
+                  }}
+                  slotProps={{ htmlInput: { readOnly: true } }}
+                />
+              </Box>
+              <Button
+                color="primary"
+                variant="contained"
                 fullWidth
-                value={patientName}
-                onChange={(event) => {
-                  setPatientName(event.target.value);
-                }}
-                slotProps={{ htmlInput: { readOnly: true } }}
-              />
-              <TextField
-                label="Email"
-                placeholder="Email"
-                fullWidth
-                value={email}
-                onChange={(event) => {
-                  setEmail(event.target.value);
-                }}
-                slotProps={{ htmlInput: { readOnly: true } }}
-              />
-            </Box>
-            <Box mb={2} display={"flex"} gap={3}>
-              <TextField
-                label="NRIC No."
-                placeholder="NRIC No."
-                fullWidth
-                value={nric}
-                onChange={(event) => {
-                  setNric(event.target.value);
-                }}
-                onInput={(e) => {
-                  e.target.value = e.target.value
-                    .replace(/\D/g, "") // remove non-digits
-                    .slice(0, 12); // limit to 12 digits
-                }}
-                slotProps={{ htmlInput: { readOnly: true } }}
-              />
-              <TextField
-                label="Phone Number"
-                placeholder="Phone Number"
-                fullWidth
-                value={phoneNumber}
-                onChange={(event) => {
-                  setPhoneNumber(event.target.value);
-                }}
-                onInput={(e) => {
-                  e.target.value = e.target.value
-                    .replace(/\D/g, "") // remove non-digits
-                    .slice(0, 10); // limit to 10 digits
-                }}
-                slotProps={{ htmlInput: { readOnly: true } }}
-              />
-            </Box>
-            <Button
-              color="primary"
-              variant="contained"
-              fullWidth
-              onClick={handleSubmit}
-            >
-              Book Appointment
-            </Button>
-          </Paper>
-        </Container>
-      </LocalizationProvider>
+                onClick={handleSubmit}
+              >
+                Book Appointment
+              </Button>
+            </Paper>
+          </Container>
+        </LocalizationProvider>
+      </Box>
     </>
   );
 }

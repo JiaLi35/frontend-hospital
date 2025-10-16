@@ -86,191 +86,195 @@ export default function AdminAppointmentPage() {
 
   return (
     <>
-      <Header />
-      <Container sx={{ mt: "40px", mb: "20px" }}>
-        <FormControl sx={{ mb: "10px" }}>
-          <InputLabel id="demo-simple-select-label">Status</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={status}
-            label="Status"
-            onChange={(event) => {
-              setStatus(event.target.value);
-            }}
-          >
-            <MenuItem value="all">All Status</MenuItem>
-            <MenuItem value="checked-in">Checked-In</MenuItem>
-            <MenuItem value="scheduled">Scheduled</MenuItem>
-            <MenuItem value="completed">Completed</MenuItem>
-            <MenuItem value="cancelled">Cancelled</MenuItem>
-          </Select>
-        </FormControl>
+      <Box sx={{ backgroundColor: "rgb(251, 251, 251)" }}>
+        <Header />
+        <Container sx={{ mt: "40px", mb: "20px" }}>
+          <FormControl sx={{ mb: "10px" }}>
+            <InputLabel id="demo-simple-select-label">Status</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={status}
+              label="Status"
+              onChange={(event) => {
+                setStatus(event.target.value);
+              }}
+            >
+              <MenuItem value="all">All Status</MenuItem>
+              <MenuItem value="checked-in">Checked-In</MenuItem>
+              <MenuItem value="scheduled">Scheduled</MenuItem>
+              <MenuItem value="completed">Completed</MenuItem>
+              <MenuItem value="cancelled">Cancelled</MenuItem>
+            </Select>
+          </FormControl>
 
-        {/* DESKTOP/TABLET VIEW */}
-        {!isMobile ? (
-          <Paper elevation={1} sx={{ marginY: 3, overflowX: "auto" }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>No.</TableCell>
-                  <TableCell>Patient Name</TableCell>
-                  <TableCell>Patient Email</TableCell>
-                  <TableCell>Date & Time</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {appointments.map((appointment, index) => {
-                  const localDateAndTime = localDateTime(appointment.dateTime);
+          {/* DESKTOP/TABLET VIEW */}
+          {!isMobile ? (
+            <Paper elevation={1} sx={{ marginY: 3, overflowX: "auto" }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>No.</TableCell>
+                    <TableCell>Patient Name</TableCell>
+                    <TableCell>Patient Email</TableCell>
+                    <TableCell>Date & Time</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {appointments.map((appointment, index) => {
+                    const localDateAndTime = localDateTime(
+                      appointment.dateTime
+                    );
 
-                  const oldAppointment = isOlderThan3Years(
-                    appointment.dateTime
-                  );
+                    const oldAppointment = isOlderThan3Years(
+                      appointment.dateTime
+                    );
 
-                  return (
-                    <TableRow key={appointment._id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell sx={{ maxWidth: "200px" }}>
-                        <Typography
-                          sx={{
-                            whiteSpace: "normal", // allow wrapping
-                            overflowWrap: "break-word", // break long words if necessary
-                            wordBreak: "break-word", // additional safety for long strings
-                          }}
-                        >
-                          {appointment.patientId.name}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ maxWidth: "200px" }}>
-                        <Typography
-                          sx={{
-                            whiteSpace: "normal", // allow wrapping
-                            overflowWrap: "break-word", // break long words if necessary
-                            wordBreak: "break-word", // additional safety for long strings
-                          }}
-                        >
-                          {appointment.patientId.email}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>{localDateAndTime}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          textTransform={"capitalize"}
-                          color={
-                            appointment.status === "cancelled"
-                              ? "error.main"
-                              : appointment.status === "completed"
-                              ? "success.main"
-                              : "text.primary"
-                          }
-                        >
-                          {appointment.status}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        {oldAppointment && (
-                          <>
-                            <Tooltip title="Delete Appointment">
-                              <Button
-                                color="error"
-                                variant="contained"
-                                onClick={() =>
-                                  handleDeleteAppointment(appointment._id)
-                                }
-                              >
-                                Delete
-                              </Button>
-                            </Tooltip>
-                          </>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </Paper>
-        ) : (
-          // MOBILE VIEW — CARD STYLE
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}>
-            {appointments.map((appointment, index) => {
-              const localDateAndTime = localDateTime(appointment.dateTime);
+                    return (
+                      <TableRow key={appointment._id}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell sx={{ maxWidth: "200px" }}>
+                          <Typography
+                            sx={{
+                              whiteSpace: "normal", // allow wrapping
+                              overflowWrap: "break-word", // break long words if necessary
+                              wordBreak: "break-word", // additional safety for long strings
+                            }}
+                          >
+                            {appointment.patientId.name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={{ maxWidth: "200px" }}>
+                          <Typography
+                            sx={{
+                              whiteSpace: "normal", // allow wrapping
+                              overflowWrap: "break-word", // break long words if necessary
+                              wordBreak: "break-word", // additional safety for long strings
+                            }}
+                          >
+                            {appointment.patientId.email}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography>{localDateAndTime}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography
+                            textTransform={"capitalize"}
+                            color={
+                              appointment.status === "cancelled"
+                                ? "error.main"
+                                : appointment.status === "completed"
+                                ? "success.main"
+                                : "text.primary"
+                            }
+                          >
+                            {appointment.status}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          {oldAppointment && (
+                            <>
+                              <Tooltip title="Delete Appointment">
+                                <Button
+                                  color="error"
+                                  variant="contained"
+                                  onClick={() =>
+                                    handleDeleteAppointment(appointment._id)
+                                  }
+                                >
+                                  Delete
+                                </Button>
+                              </Tooltip>
+                            </>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Paper>
+          ) : (
+            // MOBILE VIEW — CARD STYLE
+            <Box
+              sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}
+            >
+              {appointments.map((appointment, index) => {
+                const localDateAndTime = localDateTime(appointment.dateTime);
 
-              const oldAppointment = isOlderThan3Years(appointment.dateTime);
+                const oldAppointment = isOlderThan3Years(appointment.dateTime);
 
-              return (
-                <Box
-                  key={appointment._id}
-                  sx={{
-                    p: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 1,
-                    borderRadius: 2,
-                    boxShadow: 1,
-                  }}
-                >
-                  <Box display={"flex"} gap={1}>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      {index + 1}.
-                    </Typography>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      {appointment.patientId.name}
-                    </Typography>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Specialty: {appointment.patientId.email}
-                  </Typography>
-                  <Typography variant="body2">
-                    Date & Time: {localDateAndTime}
-                  </Typography>
-                  <Typography
-                    textTransform={"capitalize"}
-                    variant="body2"
-                    color={
-                      appointment.status === "cancelled"
-                        ? "error.main"
-                        : appointment.status === "completed"
-                        ? "success.main"
-                        : "text.primary"
-                    }
+                return (
+                  <Box
+                    key={appointment._id}
+                    sx={{
+                      p: 2,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 1,
+                      borderRadius: 2,
+                      boxShadow: 1,
+                    }}
                   >
-                    Status: {appointment.status}
-                  </Typography>
-                  {oldAppointment && (
-                    <>
-                      <Tooltip title="Delete Appointment">
-                        <Button
-                          color="error"
-                          variant="contained"
-                          onClick={() =>
-                            handleDeleteAppointment(appointment._id)
-                          }
-                        >
-                          Delete
-                        </Button>
-                      </Tooltip>
-                    </>
-                  )}
-                </Box>
-              );
-            })}
-          </Box>
-        )}
-        {appointments.length === 0 ? (
-          <>
-            <Container>
-              <Typography>No appointments found.</Typography>
-            </Container>
-          </>
-        ) : null}
-      </Container>
+                    <Box display={"flex"} gap={1}>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {index + 1}.
+                      </Typography>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {appointment.patientId.name}
+                      </Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Specialty: {appointment.patientId.email}
+                    </Typography>
+                    <Typography variant="body2">
+                      Date & Time: {localDateAndTime}
+                    </Typography>
+                    <Typography
+                      textTransform={"capitalize"}
+                      variant="body2"
+                      color={
+                        appointment.status === "cancelled"
+                          ? "error.main"
+                          : appointment.status === "completed"
+                          ? "success.main"
+                          : "text.primary"
+                      }
+                    >
+                      Status: {appointment.status}
+                    </Typography>
+                    {oldAppointment && (
+                      <>
+                        <Tooltip title="Delete Appointment">
+                          <Button
+                            color="error"
+                            variant="contained"
+                            onClick={() =>
+                              handleDeleteAppointment(appointment._id)
+                            }
+                          >
+                            Delete
+                          </Button>
+                        </Tooltip>
+                      </>
+                    )}
+                  </Box>
+                );
+              })}
+            </Box>
+          )}
+          {appointments.length === 0 ? (
+            <>
+              <Container>
+                <Typography>No appointments found.</Typography>
+              </Container>
+            </>
+          ) : null}
+        </Container>
+      </Box>
     </>
   );
-
-  /* get appoitnments. if the appointment dates are like 3 years ago, then show the delete button to delete the appointment.  */
 }

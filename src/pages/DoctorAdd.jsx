@@ -78,6 +78,7 @@ export default function DoctorAdd() {
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column", // make it a column layout
+          backgroundColor: "rgb(251, 251, 251)",
         }}
       >
         <Header />

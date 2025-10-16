@@ -36,7 +36,7 @@ export default function DoctorPage() {
         <Header />
         <Container sx={{ textAlign: "center", mt: 10 }}>
           <Typography variant="h6" color="text.secondary">
-            Loading doctor details...
+            No Doctor Found.
           </Typography>
         </Container>
       </>
@@ -71,8 +71,8 @@ export default function DoctorPage() {
           <CardMedia
             component="img"
             sx={{
-              width: { xs: "100%", md: 300 },
-              height: { xs: 250, md: "auto" },
+              width: { xs: 250, md: 300 },
+              height: { xs: 250, md: 300 },
               objectFit: "cover",
               borderRadius: "10px",
             }}

@@ -13,6 +13,8 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -33,6 +35,7 @@ export default function Header() {
   const [patientId, setPatientId] = useState("");
   const [doctorId, setDoctorId] = useState("");
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // app bar
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -291,8 +294,12 @@ export default function Header() {
                   onClick={() => {
                     // remove the cookie
                     removeCookie("currentuser");
-                    // redirect back to login page
-                    window.location.href = "/login";
+                    setTimeout(() => {
+                      setLoading(true);
+                      // redirect back to login page
+                      window.location.href = "/login";
+                      setLoading(false);
+                    }, 500);
                   }}
                 >
                   <LogoutIcon fontSize="small" sx={{ marginRight: "10px" }} />
@@ -326,6 +333,12 @@ export default function Header() {
           )}
         </Toolbar>
       </Container>
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </AppBar>
   );
 }
