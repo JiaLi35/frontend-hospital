@@ -27,7 +27,7 @@ export default function SignUpPage() {
 
   const handleSignUp = async () => {
     if (
-      !name ||
+      !name.trim() ||
       !email ||
       !nric ||
       !phoneNumber ||
@@ -46,8 +46,6 @@ export default function SignUpPage() {
     } else if (phoneNumber.length !== 10) {
       // if phone number is not a certain length, throw an error to input a valid value
       toast.error("Please enter a valid phone number.");
-    } else if (!name.trim()) {
-      toast.error("Please key in a valid name");
     } else {
       try {
         const userData = await addPatientProfileAndSignUp(

@@ -37,7 +37,13 @@ export default function AdminAppointmentPage() {
   const [appointments, setAppointments] = useState([]);
   const isMobile = useMediaQuery("(max-width:800px)");
 
+  // GET appointments data
   useEffect(() => {
+    if (!currentuser || currentuser.role !== "admin") {
+      navigate("/");
+      toast.error("Access denied");
+    }
+
     getAppointments(status)
       .then((appointmentData) => {
         setAppointments(appointmentData);
@@ -46,20 +52,18 @@ export default function AdminAppointmentPage() {
         console.log(error);
         toast.error(error?.response?.data?.message);
       });
-
-    if (!currentuser || currentuser.role !== "admin") {
-      navigate("/");
-      toast.error("Access denied");
-    }
   }, [status]);
 
+  // convert dates into local time
   const localDateTime = (date) => {
     return dayjs(date).local().format("DD MMM YYYY, hh:mm A");
   };
 
+  // check if the appointment is older than 3 years
   const isOlderThan3Years = (date) => {
     return dayjs().diff(dayjs(date), "year") >= 3;
   };
+
   const handleDeleteAppointment = async (id) => {
     Swal.fire({
       title: "Are you sure you want to delete this appointment?",
@@ -85,6 +89,7 @@ export default function AdminAppointmentPage() {
     });
   };
 
+  // sort appointments by ascending vs descending (useMemo to know when to sort the appointments)
   const sortedAppointments = useMemo(() => {
     return [...appointments].sort((a, b) => {
       const dateA = dayjs(a.dateTime);
@@ -98,6 +103,7 @@ export default function AdminAppointmentPage() {
       <Box sx={{ backgroundColor: "rgb(251, 251, 251)" }}>
         <Header />
         <Container sx={{ mt: "40px", mb: "20px" }}>
+          {/* filter & sorting */}
           <Box sx={{ display: "flex", gap: "10px", mb: "10px" }}>
             <FormControl sx={{ mb: "10px" }}>
               <InputLabel id="demo-simple-select-label">Status</InputLabel>
@@ -154,6 +160,7 @@ export default function AdminAppointmentPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  {/* map sorted appointments */}
                   {sortedAppointments.map((appointment, index) => {
                     const localDateAndTime = localDateTime(
                       appointment.dateTime
@@ -206,6 +213,7 @@ export default function AdminAppointmentPage() {
                           </Typography>
                         </TableCell>
                         <TableCell>
+                          {/* if appointment is older than 3 years, show the button to delete it. */}
                           {oldAppointment && (
                             <>
                               <Tooltip title="Delete Appointment">
@@ -233,6 +241,7 @@ export default function AdminAppointmentPage() {
             <Box
               sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}
             >
+              {/* map out sorted appointments */}
               {sortedAppointments.map((appointment, index) => {
                 const localDateAndTime = localDateTime(appointment.dateTime);
 
@@ -277,6 +286,7 @@ export default function AdminAppointmentPage() {
                     >
                       Status: {appointment.status}
                     </Typography>
+                    {/* if appointment is older than 3 years, show the button to delete it. */}
                     {oldAppointment && (
                       <>
                         <Tooltip title="Delete Appointment">
@@ -297,6 +307,7 @@ export default function AdminAppointmentPage() {
               })}
             </Box>
           )}
+          {/* if no appointments booked yet */}
           {appointments.length === 0 ? (
             <>
               <Container>

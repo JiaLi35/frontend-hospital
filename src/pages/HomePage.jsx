@@ -52,6 +52,7 @@ const services = [
 function CarouselInner({ slides }) {
   const [active, setActive] = useState(0);
 
+  // auto scroll time interval
   useEffect(() => {
     const t = setInterval(() => {
       setActive((a) => (a + 1) % slides.length);

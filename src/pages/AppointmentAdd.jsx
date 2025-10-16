@@ -90,7 +90,9 @@ export default function AppointmentAdd() {
       .catch((error) => {
         console.log(error);
       });
+  }, [id]);
 
+  useEffect(() => {
     getPatient(_id)
       .then((patientData) => {
         // update the individual states with data
@@ -103,7 +105,9 @@ export default function AppointmentAdd() {
       .catch((error) => {
         console.log(error);
       });
+  }, [_id]);
 
+  useEffect(() => {
     getSpecialties()
       .then((data) => setSpecialties(data))
       .catch((error) => {
@@ -132,7 +136,7 @@ export default function AppointmentAdd() {
 
       const now = dayjs();
 
-      // ✅ Validation: prevent booking in the past
+      //  prevent booking in the past
       if (combinedDateTime.isBefore(now)) {
         toast.error(
           "You cannot select a past date or time. Please choose another time slot."
@@ -237,7 +241,7 @@ export default function AppointmentAdd() {
                       return true;
                     });
 
-                    // ✅ If no available slots, show message box
+                    // If no available slots, show message box
                     if (availableTimeSlots.length === 0) {
                       return (
                         <Box

@@ -7,7 +7,7 @@ export const getPatient = async (user_id) => {
   return response.data;
 };
 
-// GET patient profile information based on user_id
+// GET patient profile information based on patient id
 export const getPatientById = async (id) => {
   const response = await axios.get(API_URL + "patients/" + id);
   return response.data;

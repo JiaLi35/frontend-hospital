@@ -33,6 +33,7 @@ export default function AppointmentView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const today = dayjs();
+  const [appointment, setAppointment] = useState(null);
   const [userId, setUserId] = useState(""); // user id for navigation purposes
   const [specialties, setSpecialties] = useState([]);
   const [doctorId, setDoctorId] = useState("");
@@ -68,19 +69,9 @@ export default function AppointmentView() {
   );
 
   useEffect(() => {
-    if (currentuser && currentuser.role === "patient") {
-      setUserId(patientId);
-    } else if (currentuser && currentuser.role === "doctor") {
-      setUserId(doctorId);
-    } else {
-      navigate("/login");
-      toast.error("Something went wrong, please login first.");
-    }
-  }, [currentuser, patientId, doctorId]);
-
-  useEffect(() => {
     getAppointment(id)
       .then((appointmentData) => {
+        setAppointment(appointmentData ? appointmentData : null);
         setDoctorId(appointmentData ? appointmentData.doctorId._id : "");
         setDoctorName(appointmentData ? appointmentData.doctorId.name : "");
         setSpecialty(
@@ -99,10 +90,10 @@ export default function AppointmentView() {
         // Convert ISO → dayjs object
         const dayjsDateTime = dayjs(isoDateTime);
 
-        // 1️⃣ Extract date part (for DateCalendar)
+        // Extract date part (for DateCalendar)
         setDate(dayjsDateTime.startOf("day"));
 
-        // 2️⃣ Extract time part (for timeSlots)
+        // Extract time part (for timeSlots)
         // Format to something like "09:30 AM"
         const formattedTime = dayjsDateTime.format("hh:mm A");
         setSelectedTime(formattedTime);
@@ -112,7 +103,9 @@ export default function AppointmentView() {
         console.log(error);
         toast.error(error.message);
       });
+  }, []);
 
+  useEffect(() => {
     getSpecialties()
       .then((data) => {
         setSpecialties(data);
@@ -123,6 +116,30 @@ export default function AppointmentView() {
       });
   }, []);
 
+  useEffect(() => {
+    if (currentuser && currentuser.role === "patient") {
+      setUserId(patientId);
+    } else if (currentuser && currentuser.role === "doctor") {
+      setUserId(doctorId);
+    } else {
+      navigate("/login");
+      toast.error("Something went wrong, please login first.");
+    }
+  }, [currentuser, patientId, doctorId]);
+
+  if (!appointment) {
+    return (
+      <>
+        <Header />
+        <Container sx={{ textAlign: "center", mt: 10 }}>
+          <Typography variant="h6" color="text.secondary">
+            No Appointment Found.
+          </Typography>
+        </Container>
+      </>
+    );
+  }
+
   const handleUpdateAppointment = async () => {
     // Combine date and time
     const combinedDateTime = dayjs(
@@ -132,7 +149,7 @@ export default function AppointmentView() {
 
     const now = dayjs();
 
-    // ✅ Validation: prevent booking in the past
+    // prevent booking in the past
     if (combinedDateTime.isBefore(now)) {
       toast.error(
         "You cannot select a past date or time. Please choose another time slot."
@@ -242,7 +259,7 @@ export default function AppointmentView() {
                       return true;
                     });
 
-                    // ✅ If no available slots, show message box
+                    // If no available slots, show message box
                     if (availableTimeSlots.length === 0) {
                       return (
                         <Box

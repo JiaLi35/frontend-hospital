@@ -315,7 +315,7 @@ export default function Header() {
                   color="dark"
                   to="/login"
                   component={Link}
-                  sx={{ m: 1 }}
+                  sx={{ m: 1, fontSize: "16px" }}
                 >
                   Login
                 </Button>
@@ -324,7 +324,7 @@ export default function Header() {
                   color="dark"
                   to="/signup"
                   component={Link}
-                  sx={{ m: 1 }}
+                  sx={{ m: 1, fontSize: "16px" }}
                 >
                   Sign Up
                 </Button>

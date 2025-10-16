@@ -58,10 +58,12 @@ export default function DoctorAppointmentPage() {
       });
   }, [status]);
 
+  // convert the dateTime into a local date & time
   const localDateTime = (date) => {
     return dayjs(date).local().format("DD MMM YYYY, hh:mm A");
   };
 
+  // get the udpated appointments by doctor id
   const refreshAppointments = async () => {
     const updated = await getAppointmentsByDoctorId(id, status);
     setAppointments(updated);
@@ -91,6 +93,7 @@ export default function DoctorAppointmentPage() {
     });
   };
 
+  // function to handle mark an appointment as complete
   const handleCompleteAppointment = async (app_id) => {
     try {
       await completeAppointment(app_id, token);
@@ -134,11 +137,7 @@ export default function DoctorAppointmentPage() {
         (async () => {
           try {
             await cancelAppointment(apptId, token);
-            const updatedAppointments = await getAppointmentsByPatientId(
-              id,
-              status
-            );
-            setAppointments(updatedAppointments);
+            refreshAppointments();
             toast.success("Appointment auto-cancelled after 30 minutes");
           } catch (error) {
             console.error("Auto-cancel failed", error);
@@ -148,10 +147,8 @@ export default function DoctorAppointmentPage() {
       }
 
       // otherwise schedule a timeout to cancel when deadline is reached
-      // Note: browsers clamp setTimeout delays to a signed 32-bit int (~2_147_483_647 ms
-      // which is ~24.85 days). Scheduling a single timeout longer than that will
-      // either overflow or fire immediately, which caused far-future appointments
-      // (e.g. in November) to be auto-cancelled as soon as the page loaded.
+      /* Note: browsers clamp setTimeout delays to a signed 32-bit int (~2_147_483_647 ms which is ~24.85 days). Scheduling a single timeout longer than that will either overflow or fire immediately, which caused far-future appointments (e.g. in November) to be auto-cancelled as soon as the page loaded. */
+
       const msUntilDeadline = deadline.diff(now);
 
       // Helper to schedule arbitrarily long delays by chaining timeouts.
@@ -163,11 +160,7 @@ export default function DoctorAppointmentPage() {
           (async () => {
             try {
               await cancelAppointment(idToCancel, token);
-              const updatedAppointments = await getAppointmentsByPatientId(
-                id,
-                status
-              );
-              setAppointments(updatedAppointments);
+              refreshAppointments();
               toast.success("Appointment auto-cancelled after 30 minutes");
             } catch (error) {
               console.error("Auto-cancel failed", error);
@@ -193,11 +186,7 @@ export default function DoctorAppointmentPage() {
           const finalTimer = setTimeout(async () => {
             try {
               await cancelAppointment(idToCancel, token);
-              const updatedAppointments = await getAppointmentsByPatientId(
-                id,
-                status
-              );
-              setAppointments(updatedAppointments);
+              refreshAppointments();
               toast.success("Appointment auto-cancelled after 30 minutes");
             } catch (error) {
               console.error("Auto-cancel failed", error);
@@ -224,6 +213,7 @@ export default function DoctorAppointmentPage() {
     };
   }, [appointments, token]);
 
+  // sort appointments by date
   const sortedAppointments = useMemo(() => {
     return [...appointments].sort((a, b) => {
       const dateA = dayjs(a.dateTime);
@@ -238,6 +228,7 @@ export default function DoctorAppointmentPage() {
         <Header />
         <Container sx={{ mt: "40px", mb: "20px" }}>
           <Box sx={{ display: "flex", gap: "10px", mb: "10px" }}>
+            {/* sorting & filtering */}
             <FormControl sx={{ mb: "10px" }}>
               <InputLabel id="demo-simple-select-label">Status</InputLabel>
               <Select
@@ -296,6 +287,7 @@ export default function DoctorAppointmentPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  {/* map out sorted appointments */}
                   {sortedAppointments.map((appointment, index) => {
                     const localDateAndTime = localDateTime(
                       appointment.dateTime
@@ -367,6 +359,7 @@ export default function DoctorAppointmentPage() {
                                 </Button>
                               </Tooltip>
                             )}
+                            {/* reschedule appointment / view appointment details. */}
                             <Tooltip
                               title={
                                 appointment.status === "cancelled" ||
@@ -389,6 +382,7 @@ export default function DoctorAppointmentPage() {
                                 )}
                               </Button>
                             </Tooltip>
+                            {/* if appointment is checked in or scheduled still can cancel */}
                             {(appointment.status === "scheduled" ||
                               appointment.status === "checked-in") && (
                               <Tooltip title="Cancel Appointment">

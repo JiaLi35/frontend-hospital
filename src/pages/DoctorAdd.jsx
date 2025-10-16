@@ -39,26 +39,28 @@ export default function DoctorAdd() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
-    getSpecialties().then((data) => {
-      setSpecialties(data);
-    });
-
     if (!currentuser || currentuser.role !== "admin") {
       navigate("/");
       toast.error("Access denied");
     }
+    getSpecialties()
+      .then((data) => {
+        setSpecialties(data);
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error(error?.response?.data?.message);
+      });
   }, []);
 
   const handleAddDoctor = async () => {
-    if (!name || !email || !specialty || !password || !confirmPassword) {
+    if (!name.trim() || !email || !specialty || !password || !confirmPassword) {
       toast.error("Please fill in all the fields.");
     } else if (!validator.validate(email)) {
       // 2. make sure the email is valid
       toast.error("Please use a valid email address");
     } else if (password !== confirmPassword) {
       toast.error("Password and Confirm Password do not match.");
-    } else if (!name.trim()) {
-      toast.error("Please key in a valid name");
     } else {
       try {
         await addDoctorProfile(name, email, specialty, password, token);

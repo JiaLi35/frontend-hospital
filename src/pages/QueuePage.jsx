@@ -99,7 +99,9 @@ export default function QueuePage() {
         console.log(error);
         toast.error(error?.response?.data?.message);
       });
+  }, [currentNumber]);
 
+  useEffect(() => {
     // set the Patient's queue number
     getPatientQueueNumber(id)
       .then((data) => {
@@ -110,8 +112,9 @@ export default function QueuePage() {
         console.log(error);
         toast.error(error?.response?.data?.message);
       });
-  }, [patientNumber, currentNumber]);
+  }, [id, patientNumber]);
 
+  // patient gets a new queue number, and show the current queue number
   const handleCheckIn = async () => {
     try {
       await newQueueNumber(doctorId, patientId, appointmentId, token);
