@@ -134,7 +134,11 @@ export default function DoctorAppointmentPage() {
         (async () => {
           try {
             await cancelAppointment(apptId, token);
-            refreshAppointments();
+            const updatedAppointments = await getAppointmentsByPatientId(
+              id,
+              status
+            );
+            setAppointments(updatedAppointments);
             toast.success("Appointment auto-cancelled after 30 minutes");
           } catch (error) {
             console.error("Auto-cancel failed", error);
@@ -144,20 +148,71 @@ export default function DoctorAppointmentPage() {
       }
 
       // otherwise schedule a timeout to cancel when deadline is reached
+      // Note: browsers clamp setTimeout delays to a signed 32-bit int (~2_147_483_647 ms
+      // which is ~24.85 days). Scheduling a single timeout longer than that will
+      // either overflow or fire immediately, which caused far-future appointments
+      // (e.g. in November) to be auto-cancelled as soon as the page loaded.
       const msUntilDeadline = deadline.diff(now);
-      const timer = setTimeout(async () => {
-        try {
-          await cancelAppointment(apptId, token);
-          refreshAppointments();
-          toast.success("Appointment auto-cancelled after 30 minutes");
-        } catch (error) {
-          console.error("Auto-cancel failed", error);
-        }
-        cancelTimersRef.current.processed.add(apptId);
-        delete cancelTimersRef.current.timers[apptId];
-      }, msUntilDeadline);
 
-      cancelTimersRef.current.timers[apptId] = timer;
+      // Helper to schedule arbitrarily long delays by chaining timeouts.
+      const MAX_TIMEOUT = 2147483647; // maximum safe setTimeout delay (~2^31-1)
+
+      const scheduleCancelTimeout = (idToCancel, remainingMs) => {
+        if (remainingMs <= 0) {
+          // deadline already reached (or corner case after chaining) -> cancel now
+          (async () => {
+            try {
+              await cancelAppointment(idToCancel, token);
+              const updatedAppointments = await getAppointmentsByPatientId(
+                id,
+                status
+              );
+              setAppointments(updatedAppointments);
+              toast.success("Appointment auto-cancelled after 30 minutes");
+            } catch (error) {
+              console.error("Auto-cancel failed", error);
+            }
+            cancelTimersRef.current.processed.add(idToCancel);
+            delete cancelTimersRef.current.timers[idToCancel];
+          })();
+          return;
+        }
+
+        // If remaining time is larger than MAX_TIMEOUT, schedule a partial timeout
+        // that will re-schedule the remainder when it fires.
+        if (remainingMs > MAX_TIMEOUT) {
+          const partial = setTimeout(() => {
+            // remove this partial timer ref before scheduling next chunk
+            if (cancelTimersRef.current.timers[idToCancel] === partial) {
+              delete cancelTimersRef.current.timers[idToCancel];
+            }
+            scheduleCancelTimeout(idToCancel, remainingMs - MAX_TIMEOUT);
+          }, MAX_TIMEOUT);
+          cancelTimersRef.current.timers[idToCancel] = partial;
+        } else {
+          const finalTimer = setTimeout(async () => {
+            try {
+              await cancelAppointment(idToCancel, token);
+              const updatedAppointments = await getAppointmentsByPatientId(
+                id,
+                status
+              );
+              setAppointments(updatedAppointments);
+              toast.success("Appointment auto-cancelled after 30 minutes");
+            } catch (error) {
+              console.error("Auto-cancel failed", error);
+            }
+            cancelTimersRef.current.processed.add(idToCancel);
+            delete cancelTimersRef.current.timers[idToCancel];
+          }, remainingMs);
+
+          cancelTimersRef.current.timers[idToCancel] = finalTimer;
+        }
+      };
+
+      // start the chained timeout
+      scheduleCancelTimeout(apptId, msUntilDeadline);
+      // mark as processed so we don't schedule duplicates
       cancelTimersRef.current.processed.add(apptId);
     });
 
