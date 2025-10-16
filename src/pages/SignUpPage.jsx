@@ -123,7 +123,9 @@ export default function SignUpPage() {
                   setName(event.target.value);
                 }}
                 onInput={(e) => {
-                  e.target.value = e.target.value.slice(0, 50); // limit to 50 digits
+                  e.target.value = e.target.value
+                    .replace(/\d/g, "")
+                    .slice(0, 50); // limit to 50 digits
                 }}
               />
             </Box>
@@ -173,7 +175,7 @@ export default function SignUpPage() {
                 onInput={(e) => {
                   e.target.value = e.target.value
                     .replace(/\D/g, "") // remove non-digits
-                    .slice(0, 10); // limit to 10 digits
+                    .slice(0, 11); // limit to 11 digits
                 }}
               />
             </Box>

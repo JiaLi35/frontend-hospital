@@ -189,13 +189,13 @@ export default function AppointmentAdd() {
                     Specialty
                   </InputLabel>
                   <Select
+                    disabled
                     labelId="demo-simple-select-label"
                     value={specialty}
                     label="Specialty"
                     onChange={(event) => {
                       setSpecialty(event.target.value);
                     }}
-                    slotProps={{ htmlInput: { readOnly: true } }}
                   >
                     {specialties.map((spe) => (
                       <MenuItem value={spe._id} key={spe._id}>
@@ -211,6 +211,7 @@ export default function AppointmentAdd() {
                     views={["year", "month", "day"]}
                     autoFocus
                     disablePast
+                    disableHighlightToday
                     minDate={today}
                     maxDate={today.add(1, "year")}
                     value={date}
